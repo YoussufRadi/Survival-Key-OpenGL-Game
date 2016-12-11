@@ -1,6 +1,8 @@
 #include "TextureBuilder.h"
 #include "Model_3DS.h"
 #include "GLTexture.h"
+#include <math.h>
+#include <stdio.h>
 #include <glut.h>
 
 //#pragma  comment(lib, "legacy_stdio_definitions.lib")
@@ -33,10 +35,14 @@ public:
 GLdouble fovy = 45.0;
 GLdouble aspectRatio = (GLdouble)WIDTH / (GLdouble)HEIGHT;
 GLdouble zNear = 0.1;
-GLdouble zFar = 100;
+GLdouble zFar = 1000;
 Vector Eye(20, 5, 20);
-Vector At(0, 0, 0);
+Vector At(Eye.x, Eye.y, Eye.z-10);
 Vector Up(0, 1, 0);
+GLdouble upAngle = 270;
+GLdouble sideAngle = 180;
+int mouseXOld = 0;
+int mouseYOld = 0;
 
 int cameraZoom = 0;
 
@@ -88,12 +94,11 @@ void setUpCamera()
 	glLoadIdentity();
 	gluPerspective(fovy, aspectRatio, zNear, zFar);
 	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);
-	setUpLights();
-	setUpMaterial();
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_NORMALIZE);
+	setUpLights();
+	setUpMaterial();
+
 }
 
 void RenderGround()
@@ -124,6 +129,11 @@ void RenderGround()
 void myDisplay(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glLoadIdentity();
+	glRotated(upAngle, 1, 0, 0);
+	glRotated(sideAngle, 0, 1, 0);
+	gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);
 
 	GLfloat lightIntensity[] = { 0.7, 0.7, 0.7, 1.0f };
 	GLfloat lightPosition[] = {0.0f, 100.0f, 0.0f, 0.0f };
@@ -172,6 +182,18 @@ void myKeyboard(unsigned char button, int x, int y)
 	case 'c':
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		break;
+	case 'w':
+		Eye.z--;
+		break;
+	case  'a':
+		Eye.x--;
+		break;
+	case  's':
+		Eye.z++;
+		break;
+	case  'd':
+		Eye.x++;
+		break;
 	case 27:
 		exit(0);
 		break;
@@ -205,10 +227,24 @@ void myMotion(int x, int y)
 	glutPostRedisplay();	//Re-draw scene 
 }
 
+void passM(int x, int y)
+{
+	int diffX = x - mouseXOld;
+	int diffY = y - mouseYOld;
+	sideAngle += diffX*0.25;
+	upAngle += diffY*0.5;
+	if (upAngle > 90)
+		upAngle == 90;
+	if (upAngle < -90)
+		upAngle == -90;
+	mouseXOld = x;
+	mouseYOld = y;
+	//printf("diffrence : %d, mouseOld : %d  \n  %d \n ", diff, mouseXOld, WIDTH);
+	glutPostRedisplay();
+}
+
 void actM(int button, int state, int x, int y)
 {
-	y = HEIGHT - y;
-
 	if (state == GLUT_DOWN)
 	{
 		cameraZoom = y;
@@ -249,6 +285,22 @@ void LoadAssets()
 	loadBMP(&tex, "Textures/sky4-jpg.bmp", true);
 }
 
+void rotateCamera(){
+	if (mouseXOld > (9 * WIDTH / 10))
+		sideAngle+=0.5;
+	if (mouseXOld < (WIDTH / 10))
+		sideAngle-=0.5;
+	if (sideAngle > 360)
+		sideAngle -= 360;
+	if (sideAngle < -360)
+		sideAngle += 360;
+}
+
+void anim(){
+	rotateCamera();
+	glutPostRedisplay();
+}
+
 void main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
@@ -258,8 +310,10 @@ void main(int argc, char** argv)
 
 	glutDisplayFunc(myDisplay);
 	glutKeyboardFunc(myKeyboard);
+	glutPassiveMotionFunc(passM);
 	glutMotionFunc(myMotion);
 	glutMouseFunc(actM);
+	glutIdleFunc(anim);
 	glutReshapeFunc(myReshape);
 
 	glClearColor(0.0, 0.0, 0.0, 0.0);
