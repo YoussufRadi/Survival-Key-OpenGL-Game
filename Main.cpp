@@ -39,7 +39,7 @@ GLdouble zFar = 1000;
 Vector Eye(20, 5, 20);
 Vector At(Eye.x, Eye.y, Eye.z-10);
 Vector Up(0, 1, 0);
-GLdouble upAngle = 270;
+GLdouble upAngle = -90;
 GLdouble sideAngle = 180;
 int mouseXOld = 0;
 int mouseYOld = 0;
@@ -233,13 +233,12 @@ void passM(int x, int y)
 	int diffY = y - mouseYOld;
 	sideAngle += diffX*0.25;
 	upAngle += diffY*0.5;
-	if (upAngle > 90)
-		upAngle == 90;
-	if (upAngle < -90)
-		upAngle == -90;
 	mouseXOld = x;
 	mouseYOld = y;
-	//printf("diffrence : %d, mouseOld : %d  \n  %d \n ", diff, mouseXOld, WIDTH);
+	if (upAngle >= 90)
+		upAngle = 90;
+	if (upAngle <= -90)
+		upAngle = -90;
 	glutPostRedisplay();
 }
 
