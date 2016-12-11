@@ -1,0 +1,7 @@
+﻿  Main.cpp
+g:\survival-key-opengl-game\texturebuilder.h(27): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+g:\survival-key-opengl-game\texturebuilder.h(28): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+g:\survival-key-opengl-game\main.cpp(64): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
+g:\survival-key-opengl-game\main.cpp(180): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
+GLTexture.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:LBR' specification
+  OpenGLMeshLoader.vcxproj -> G:\Survival-Key-OpenGL-Game\Debug\OpenGLMeshLoader.exe
