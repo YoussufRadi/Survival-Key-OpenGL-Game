@@ -1,7 +1,18 @@
-﻿  Main.cpp
-g:\survival-key-opengl-game\texturebuilder.h(27): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
-g:\survival-key-opengl-game\texturebuilder.h(28): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
-g:\survival-key-opengl-game\main.cpp(64): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
-g:\survival-key-opengl-game\main.cpp(180): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
-GLTexture.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:LBR' specification
-  OpenGLMeshLoader.vcxproj -> G:\Survival-Key-OpenGL-Game\Debug\OpenGLMeshLoader.exe
+﻿Build started 12/11/2016 8:59:59 PM.
+     1>Project "C:\Users\y_sam\Desktop\Projects\OpenGL\Survival-Key-OpenGL-Game\OpenGLMeshLoader.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\y_sam\Desktop\Projects\OpenGL\Survival-Key-OpenGL-Game\Debug\\.." /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Main.cpp
+         Main.cpp
+     1>c:\users\y_sam\desktop\projects\opengl\survival-key-opengl-game\texturebuilder.h(27): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+     1>c:\users\y_sam\desktop\projects\opengl\survival-key-opengl-game\texturebuilder.h(28): warning C4244: 'argument' : conversion from 'int' to 'GLfloat', possible loss of data
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\y_sam\Desktop\Projects\OpenGL\Survival-Key-OpenGL-Game\Debug\OpenGLMeshLoader.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:"C:\Users\y_sam\Desktop\Projects\OpenGL\Survival-Key-OpenGL-Game\Debug\\.." glut32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\y_sam\Desktop\Projects\OpenGL\Survival-Key-OpenGL-Game\Debug\OpenGLMeshLoader.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\y_sam\Desktop\Projects\OpenGL\Survival-Key-OpenGL-Game\Debug\OpenGLMeshLoader.lib" /MACHINE:X86 Debug\GLTexture.obj
+         Debug\Model_3DS.obj
+         Debug\Main.obj
+     1>GLTexture.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:LBR' specification
+         OpenGLMeshLoader.vcxproj -> C:\Users\y_sam\Desktop\Projects\OpenGL\Survival-Key-OpenGL-Game\Debug\OpenGLMeshLoader.exe
+     1>Done Building Project "C:\Users\y_sam\Desktop\Projects\OpenGL\Survival-Key-OpenGL-Game\OpenGLMeshLoader.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.98
