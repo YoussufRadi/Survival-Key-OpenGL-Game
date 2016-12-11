@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <glut.h>
 
+#define PI 3.14159265
+#define degToRad(x) ((x)*PI/180)
 //#pragma  comment(lib, "legacy_stdio_definitions.lib")
 
 int WIDTH = glutGet(GLUT_SCREEN_WIDTH);
@@ -133,7 +135,7 @@ void myDisplay(void)
 	glLoadIdentity();
 	glRotated(upAngle, 1, 0, 0);
 	glRotated(sideAngle, 0, 1, 0);
-	gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);
+	gluLookAt(Eye.x, Eye.y, Eye.z, Eye.x, Eye.y, Eye.z-10, Up.x, Up.y, Up.z);
 
 	GLfloat lightIntensity[] = { 0.7, 0.7, 0.7, 1.0f };
 	GLfloat lightPosition[] = {0.0f, 100.0f, 0.0f, 0.0f };
@@ -168,7 +170,7 @@ void myDisplay(void)
 	gluSphere(qobj,100,100,100);
 	gluDeleteQuadric(qobj);
 	glPopMatrix();
-	
+
 	glutSwapBuffers();
 }
 
@@ -183,16 +185,20 @@ void myKeyboard(unsigned char button, int x, int y)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		break;
 	case 'w':
-		Eye.z--;
+		Eye.z += -cos(degToRad(sideAngle));
+		Eye.x += sin(degToRad(sideAngle));
 		break;
 	case  'a':
-		Eye.x--;
+		Eye.x += cos(degToRad(180-sideAngle));
+		Eye.z += -sin(degToRad(180-sideAngle));
 		break;
 	case  's':
-		Eye.z++;
+		Eye.z += cos(degToRad(sideAngle));
+		Eye.x += -sin(degToRad(sideAngle));
 		break;
 	case  'd':
-		Eye.x++;
+		Eye.x += -cos(degToRad(180 - sideAngle));
+		Eye.z += sin(degToRad(180 - sideAngle));
 		break;
 	case 27:
 		exit(0);
@@ -306,6 +312,8 @@ void main(int argc, char** argv)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(WIDTH, HEIGHT);
 	glutCreateWindow(title);
+	glutFullScreen();
+	glutSetCursor(GLUT_CURSOR_NONE);
 
 	glutDisplayFunc(myDisplay);
 	glutKeyboardFunc(myKeyboard);
