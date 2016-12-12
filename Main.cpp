@@ -15,6 +15,13 @@ int HEIGHT = glutGet(GLUT_SCREEN_HEIGHT);
 GLuint tex;
 char title[] = "3D Survival Game";
 
+//int keyLocations [4][4] = { { 20, 1, 3, 0},
+//							{ -8, 1, -5, 0},
+//							{ 20, 74, 67, 0},
+//							{ 11, 18, 14, 0} };
+
+
+
 class Vector
 {
 public:
@@ -33,13 +40,22 @@ public:
 	}
 };
 
+int keyCount = 0;
+const int keysAmount = 3;
+Vector key0(20, 1, 3);
+Vector key1(-8, 1, -5);
+Vector key2(10, 1, -23);
+Vector keyLocations[] = { key0, key1, key2 };
+bool keysTaken[] = { false, false, false };
+
+
 // 3D Projection Options
 GLdouble fovy = 45.0;
 GLdouble aspectRatio = (GLdouble)WIDTH / (GLdouble)HEIGHT;
 GLdouble zNear = 0.01;
 GLdouble zFar = 1000;
 Vector Eye(20, 1, 20);
-Vector At(Eye.x, Eye.y, Eye.z-10);
+Vector At(Eye.x, Eye.y, Eye.z - 10);
 Vector Up(0, 1, 0);
 GLdouble upAngle = -90;
 GLdouble sideAngle = 180;
@@ -56,6 +72,7 @@ Model_3DS model_tree;
 
 // Textures
 GLTexture tex_ground;
+GLTexture tex_key;
 
 void print(int x, int y, char *string)
 {
@@ -71,7 +88,7 @@ void sunLights() {
 	GLfloat light_ambient[4] = { 0.2, 0.2, 0.1, 0.1 };
 	GLfloat light_specular[4] = { 0.3, 0.3, 0.0, 0.3 };
 	GLfloat light_position[4] = { 0, 0, -10, 0.0 }; // <- w = 1
-	GLfloat light_direction[3] = { 0, 0, 10};
+	GLfloat light_direction[3] = { 0, 0, 10 };
 	glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
 	glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
@@ -86,7 +103,7 @@ void setUpLights()
 	GLfloat light_specular[4] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light_position[4] = { Eye.x + 5, Eye.y + 0.3, Eye.z + 15, 1.0 };
 	GLfloat spot_direction[3] = { -cos(degToRad(270 - sideAngle)), -sin(degToRad(upAngle)), sin(degToRad(270 - sideAngle)) };
-	GLfloat spot_cutoff = batteryLife/10;
+	GLfloat spot_cutoff = batteryLife / 10;
 	GLfloat spot_exponent = 0.01;
 	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
@@ -139,11 +156,11 @@ void RenderGround()
 	glNormal3f(0, 1, 0);	// Set quad normal direction.
 	glTexCoord2f(0, 0);		// Set tex coordinates ( Using (0,0) -> (5,5) with texture wrapping set to GL_REPEAT to simulate the ground repeated grass texture).
 	glVertex3f(-20, 0, -20);
-	glTexCoord2f(5, 0);
+	glTexCoord2f(10, 0);
 	glVertex3f(20, 0, -20);
-	glTexCoord2f(5, 5);
+	glTexCoord2f(10, 10);
 	glVertex3f(20, 0, 20);
-	glTexCoord2f(0, 5);
+	glTexCoord2f(0, 10);
 	glVertex3f(-20, 0, 20);
 	glEnd();
 	glPopMatrix();
@@ -152,16 +169,40 @@ void RenderGround()
 	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
 }
 
+void drawKeys() {
+
+	glEnable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
+	glEnable(GL_TEXTURE_GEN_T);
+	glBindTexture(GL_TEXTURE_2D, tex_key.texture[0]);
+	glDisable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
+	glDisable(GL_TEXTURE_GEN_T);
+
+	for (int i = 0; i < keysAmount; i++)
+	{
+		if (keysTaken[i] == false) {
+			glPushMatrix();
+			glTranslated(keyLocations[i].x, keyLocations[i].y, keyLocations[i].z);
+			glScaled(0.5, 0.5, 0.5);
+			glutSolidTeapot(1);
+			glPopMatrix();
+		}
+	}
+}
+
 void myDisplay(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 	glLoadIdentity();
 	glRotated(upAngle, 1, 0, 0);
 	glRotated(sideAngle, 0, 1, 0);
-	gluLookAt(Eye.x, Eye.y, Eye.z, Eye.x, Eye.y, Eye.z-10, Up.x, Up.y, Up.z);
+	gluLookAt(Eye.x, Eye.y, Eye.z, Eye.x, Eye.y, Eye.z - 10, Up.x, Up.y, Up.z);
 
 	setUpLights();
+
+	glPushMatrix();
+	drawKeys();
+	glPopMatrix();
 
 	// Draw Ground
 	RenderGround();
@@ -172,7 +213,7 @@ void myDisplay(void)
 	glColor3d(0.2, 1, 0.2);
 	for (int i = 0; i < batteryLife / 10; i++){
 		glPushMatrix();
-		glTranslated(Eye.x+.03, Eye.y+.03, Eye.z);
+		glTranslated(Eye.x + .03, Eye.y + .03, Eye.z);
 		glRotated(-upAngle, 1, 0, 0);
 		glRotated(-sideAngle, 0, 1, 0);
 		glTranslated(0.005*i, 0, -0.1);
@@ -197,18 +238,29 @@ void myDisplay(void)
 	model_house.Draw();
 	glPopMatrix();
 
+
+
+	//glPushMatrix();
+	//glScaled(0.9, 0.9, 0.9);
+	//glTranslated(keyLocations[0].x-8.8, keyLocations[0].y, keyLocations[0].z-1.3);
+	////glRotatef(90.f, 1, 0, 0);
+	//glutSolidCube(4);
+	//glPopMatrix();
+
+
 	//sky box
 	glPushMatrix();
 	GLUquadricObj * qobj;
 	qobj = gluNewQuadric();
-	glTranslated(50,0,0);
-	glRotated(90,1,0,1);
+	glTranslated(50, 0, 0);
+	glRotated(90, 1, 0, 1);
 	glBindTexture(GL_TEXTURE_2D, tex);
-	gluQuadricTexture(qobj,true);
-	gluQuadricNormals(qobj,GL_SMOOTH);
-	gluSphere(qobj,100,100,100);
+	gluQuadricTexture(qobj, true);
+	gluQuadricNormals(qobj, GL_SMOOTH);
+	gluSphere(qobj, 100, 100, 100);
 	gluDeleteQuadric(qobj);
 	glPopMatrix();
+	//glDisable(GL_TEXTURE_2D);
 
 	glutSwapBuffers();
 }
@@ -228,8 +280,8 @@ void myKeyboard(unsigned char button, int x, int y)
 		Eye.x += sin(degToRad(sideAngle));
 		break;
 	case  'a':
-		Eye.x += cos(degToRad(180-sideAngle));
-		Eye.z += -sin(degToRad(180-sideAngle));
+		Eye.x += cos(degToRad(180 - sideAngle));
+		Eye.z += -sin(degToRad(180 - sideAngle));
 		break;
 	case  's':
 		Eye.z += cos(degToRad(sideAngle));
@@ -245,31 +297,11 @@ void myKeyboard(unsigned char button, int x, int y)
 	default:
 		break;
 	}
+
+	//printf("Eye.x: %f	 Eye.z: %f\n", Eye.x, Eye.z);
+	//printf("Range in %i to %i\n", tx - 1, tx + 1);
+
 	glutPostRedisplay();
-}
-
-void myMotion(int x, int y)
-{
-	y = HEIGHT - y;
-
-	if (cameraZoom - y > 0)
-	{
-		Eye.x += -0.1;
-		Eye.z += -0.1;
-	}
-	else
-	{
-		Eye.x += 0.1;
-		Eye.z += 0.1;
-	}
-	cameraZoom = y;
-	glLoadIdentity();	//Clear Model_View Matrix
-	gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
-
-	GLfloat light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-	glutPostRedisplay();	//Re-draw scene 
 }
 
 void passM(int x, int y)
@@ -289,9 +321,18 @@ void passM(int x, int y)
 
 void actM(int button, int state, int x, int y)
 {
-	if (state == GLUT_DOWN)
-	{
-		cameraZoom = y;
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+		for (int i = 0; i < keysAmount; i++)
+		{
+			if (Eye.x <= keyLocations[i].x + 5 && Eye.x >= keyLocations[i].x - 5
+				&& Eye.z <= keyLocations[i].z + 5 && Eye.z >= keyLocations[i].z - 5
+				&& keysTaken[i] == false) {
+				keysTaken[i] = true;
+				keyCount++;
+				printf("Key Count: %i", keyCount);
+				printf("\n");
+			}
+		}
 	}
 }
 
@@ -325,15 +366,17 @@ void LoadAssets()
 	model_tree.Load("Models/tree/tree1.3ds");
 
 	// Loading texture files
-	tex_ground.Load("Textures/ground.bmp");
+	tex_ground.Load("Textures/grassground.bmp");
+	tex_key.Load("Textures/gold.bmp");
 	loadBMP(&tex, "Textures/sky4-jpg.bmp", true);
+
 }
 
 void rotateCamera(){
 	if (mouseXOld > (9 * WIDTH / 10))
-		sideAngle+=0.5;
+		sideAngle += 0.5;
 	if (mouseXOld < (WIDTH / 10))
-		sideAngle-=0.5;
+		sideAngle -= 0.5;
 	if (sideAngle > 360)
 		sideAngle -= 360;
 	if (sideAngle < -360)
@@ -344,6 +387,12 @@ void anim(){
 	batteryLife -= 0.01;
 	rotateCamera();
 	glutPostRedisplay();
+}
+
+void checkLookAtKey() {
+	float x = Eye.x - At.x;
+	float y = Eye.y - At.y;
+	float z = Eye.z - At.z;
 }
 
 void main(int argc, char** argv)
@@ -358,7 +407,6 @@ void main(int argc, char** argv)
 	glutDisplayFunc(myDisplay);
 	glutKeyboardFunc(myKeyboard);
 	glutPassiveMotionFunc(passM);
-	glutMotionFunc(myMotion);
 	glutMouseFunc(actM);
 	glutIdleFunc(anim);
 	glutReshapeFunc(myReshape);
@@ -366,7 +414,7 @@ void main(int argc, char** argv)
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
 	glPushMatrix();
-	
+
 	//glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
@@ -378,7 +426,7 @@ void main(int argc, char** argv)
 	setUpCamera();
 	LoadAssets();
 	sunLights();
-	
+
 	glPopMatrix();
 
 	glutMainLoop();
