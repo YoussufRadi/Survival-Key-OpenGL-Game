@@ -132,11 +132,11 @@ void RenderGround()
 	glNormal3f(0, 1, 0);	// Set quad normal direction.
 	glTexCoord2f(0, 0);		// Set tex coordinates ( Using (0,0) -> (5,5) with texture wrapping set to GL_REPEAT to simulate the ground repeated grass texture).
 	glVertex3f(-20, 0, -20);
-	glTexCoord2f(5, 0);
+	glTexCoord2f(10, 0);
 	glVertex3f(20, 0, -20);
-	glTexCoord2f(5, 5);
+	glTexCoord2f(10, 10);
 	glVertex3f(20, 0, 20);
-	glTexCoord2f(0, 5);
+	glTexCoord2f(0, 10);
 	glVertex3f(-20, 0, 20);
 	glEnd();
 	glPopMatrix();
@@ -327,7 +327,7 @@ void LoadAssets()
 	model_tree.Load("Models/tree/Tree1.3ds");
 
 	// Loading texture files
-	tex_ground.Load("Textures/ground.bmp");
+	tex_ground.Load("Textures/grassground.bmp");
 	tex_key.Load("Textures/gold.bmp");
 	loadBMP(&tex, "Textures/sky4-jpg.bmp", true);
 
@@ -347,6 +347,12 @@ void rotateCamera(){
 void anim(){
 	rotateCamera();
 	glutPostRedisplay();
+}
+
+void checkLookAtKey() {
+	float x = Eye.x - At.x;
+	float y = Eye.y - At.y;
+	float z = Eye.z - At.z;
 }
 
 void main(int argc, char** argv)
