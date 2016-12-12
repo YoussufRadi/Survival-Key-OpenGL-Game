@@ -48,6 +48,8 @@ int mouseYOld = 0;
 
 int cameraZoom = 0;
 
+double batteryLife = 100;
+
 // Model Variables
 Model_3DS model_house;
 Model_3DS model_tree;
@@ -79,15 +81,13 @@ void sunLights() {
 
 void setUpLights()
 {
-	printf("Angle %f Eyex %f Eyey %f Eyez %f \n", upAngle, Eye.x, Eye.y, Eye.z);
-
 	GLfloat light_diffuse[4] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light_ambient[4] = { 0.2, 0.2, 0.2, 1.0 };
 	GLfloat light_specular[4] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light_position[4] = { Eye.x + 5, Eye.y + 0.3, Eye.z + 15, 1.0 };
 	GLfloat spot_direction[3] = { -cos(degToRad(270 - sideAngle)), -sin(degToRad(upAngle)), sin(degToRad(270 - sideAngle)) };
-	GLfloat spot_cutoff = 10.0;
-	GLfloat spot_exponent = 10;
+	GLfloat spot_cutoff = batteryLife/10;
+	GLfloat spot_exponent = 0.01;
 	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
@@ -167,6 +167,16 @@ void myDisplay(void)
 
 	// Draw Ground
 	RenderGround();
+
+	//Drawing Battery Life Bar
+	glPushMatrix();
+	for (int i = 0; i < batteryLife / 10; i++){
+		glPushMatrix();
+		glTranslated(Eye.x + 1*i, Eye.y, Eye.z - 5);
+		glutSolidCube(1);
+		glPopMatrix();
+	}
+	glPopMatrix();
 
 	// Draw Tree Model
 	glPushMatrix();
@@ -325,6 +335,7 @@ void rotateCamera(){
 }
 
 void anim(){
+	batteryLife -= 0.01;
 	rotateCamera();
 	glutPostRedisplay();
 }
@@ -348,7 +359,9 @@ void main(int argc, char** argv)
 
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
-	glEnable(GL_DEPTH_TEST);
+	glPushMatrix();
+	
+	//glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHT1);
@@ -359,6 +372,8 @@ void main(int argc, char** argv)
 	setUpCamera();
 	LoadAssets();
 	sunLights();
+	
+	glPopMatrix();
 
 	glutMainLoop();
 }
