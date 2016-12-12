@@ -7,13 +7,20 @@
 
 #define PI 3.14159265
 #define degToRad(x) ((x)*PI/180)
-//#pragma  comment(lib, "legacy_stdio_definitions.lib")
+#pragma  comment(lib, "legacy_stdio_definitions.lib")
 
 int WIDTH = glutGet(GLUT_SCREEN_WIDTH);
 int HEIGHT = glutGet(GLUT_SCREEN_HEIGHT);
 
 GLuint tex;
 char title[] = "3D Survival Game";
+
+//int keyLocations [4][4] = { { 20, 1, 3, 0},
+//							{ -8, 1, -5, 0},
+//							{ 20, 74, 67, 0},
+//							{ 11, 18, 14, 0} };
+
+
 
 class Vector
 {
@@ -32,6 +39,15 @@ public:
 		z += value;
 	}
 };
+
+int keyCount = 0;
+const int keysAmount = 3;
+Vector key0(20, 1, 3);
+Vector key1(-8, 1, -5);
+Vector key2(10, 1, -23);
+Vector keyLocations[] = { key0, key1, key2 };
+bool keysTaken[] = { false,false,false };
+
 
 // 3D Projection Options
 GLdouble fovy = 45.0;
@@ -54,6 +70,7 @@ Model_3DS model_tree;
 
 // Textures
 GLTexture tex_ground;
+GLTexture tex_key;
 
 void setUpLights()
 {
@@ -128,6 +145,26 @@ void RenderGround()
 	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
 }
 
+void drawKeys() {
+	
+	glEnable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
+	glEnable(GL_TEXTURE_GEN_T);
+	glBindTexture(GL_TEXTURE_2D, tex_key.texture[0]);
+	glDisable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
+	glDisable(GL_TEXTURE_GEN_T);
+
+	for (int i = 0; i < keysAmount; i++)
+	{
+		if (keysTaken[i] == false) {
+			glPushMatrix();
+			glTranslated(keyLocations[i].x, keyLocations[i].y, keyLocations[i].z);
+			glScaled(0.5, 0.5, 0.5);
+			glutSolidTeapot(1);
+			glPopMatrix();
+		}
+	}
+}
+
 void myDisplay(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -142,9 +179,13 @@ void myDisplay(void)
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, lightIntensity);
 
+	glPushMatrix();
+	drawKeys();
+	glPopMatrix();
+
 	// Draw Ground
 	RenderGround();
-
+	
 	// Draw Tree Model
 	glPushMatrix();
 	glTranslatef(10, 0, 0);
@@ -158,6 +199,16 @@ void myDisplay(void)
 	model_house.Draw();
 	glPopMatrix();
 
+
+
+	//glPushMatrix();
+	//glScaled(0.9, 0.9, 0.9);
+	//glTranslated(keyLocations[0].x-8.8, keyLocations[0].y, keyLocations[0].z-1.3);
+	////glRotatef(90.f, 1, 0, 0);
+	//glutSolidCube(4);
+	//glPopMatrix();
+	
+
 	//sky box
 	glPushMatrix();
 	GLUquadricObj * qobj;
@@ -170,6 +221,7 @@ void myDisplay(void)
 	gluSphere(qobj,100,100,100);
 	gluDeleteQuadric(qobj);
 	glPopMatrix();
+	//glDisable(GL_TEXTURE_2D);
 
 	glutSwapBuffers();
 }
@@ -206,31 +258,11 @@ void myKeyboard(unsigned char button, int x, int y)
 	default:
 		break;
 	}
+
+	//printf("Eye.x: %f	 Eye.z: %f\n", Eye.x, Eye.z);
+	//printf("Range in %i to %i\n", tx - 1, tx + 1);
+
 	glutPostRedisplay();
-}
-
-void myMotion(int x, int y)
-{
-	y = HEIGHT - y;
-
-	if (cameraZoom - y > 0)
-	{
-		Eye.x += -0.1;
-		Eye.z += -0.1;
-	}
-	else
-	{
-		Eye.x += 0.1;
-		Eye.z += 0.1;
-	}
-	cameraZoom = y;
-	glLoadIdentity();	//Clear Model_View Matrix
-	gluLookAt(Eye.x, Eye.y, Eye.z, At.x, At.y, At.z, Up.x, Up.y, Up.z);	//Setup Camera with modified paramters
-
-	GLfloat light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-	glutPostRedisplay();	//Re-draw scene 
 }
 
 void passM(int x, int y)
@@ -250,9 +282,18 @@ void passM(int x, int y)
 
 void actM(int button, int state, int x, int y)
 {
-	if (state == GLUT_DOWN)
-	{
-		cameraZoom = y;
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+		for (int i = 0; i < keysAmount; i++)
+		{
+			if (Eye.x <= keyLocations[i].x + 5 && Eye.x >= keyLocations[i].x - 5
+				&& Eye.z <= keyLocations[i].z + 5 && Eye.z >= keyLocations[i].z - 5
+				&& keysTaken[i] == false) {
+					keysTaken[i] = true;
+					keyCount++;
+					printf("Key Count: %i", keyCount);
+					printf("\n");
+			}
+		}
 	}
 }
 
@@ -287,7 +328,9 @@ void LoadAssets()
 
 	// Loading texture files
 	tex_ground.Load("Textures/ground.bmp");
+	tex_key.Load("Textures/gold.bmp");
 	loadBMP(&tex, "Textures/sky4-jpg.bmp", true);
+
 }
 
 void rotateCamera(){
@@ -312,13 +355,12 @@ void main(int argc, char** argv)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(WIDTH, HEIGHT);
 	glutCreateWindow(title);
-	glutFullScreen();
+	//glutFullScreen();
 	glutSetCursor(GLUT_CURSOR_NONE);
 
 	glutDisplayFunc(myDisplay);
 	glutKeyboardFunc(myKeyboard);
 	glutPassiveMotionFunc(passM);
-	glutMotionFunc(myMotion);
 	glutMouseFunc(actM);
 	glutIdleFunc(anim);
 	glutReshapeFunc(myReshape);
