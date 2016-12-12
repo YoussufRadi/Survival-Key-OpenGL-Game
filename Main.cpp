@@ -55,6 +55,15 @@ Model_3DS model_tree;
 // Textures
 GLTexture tex_ground;
 
+void print(int x, int y, char *string)
+{
+	int len, i;
+	glRasterPos2f(x, y);
+	len = (int)strlen(string);
+	for (i = 0; i < len; i++)
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, string[i]);
+}
+
 void setUpLights()
 {
 	printf("Angle %f Eyex %f Eyey %f Eyez %f \n", upAngle, Eye.x, Eye.y, Eye.z);
@@ -62,7 +71,7 @@ void setUpLights()
 	GLfloat light_diffuse[4] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light_ambient[4] = { 0.2, 0.2, 0.2, 1.0 };
 	GLfloat light_specular[4] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_position[4] = { Eye.x, Eye.y, Eye.z, 1.0 };
+	GLfloat light_position[4] = { Eye.x, Eye.y, Eye.z+10, 1.0 };
 	GLfloat spot_direction[3] = { -cos(degToRad(270 - sideAngle)), -sin(degToRad(upAngle)), sin(degToRad(270 - sideAngle)) };
 	GLfloat spot_cutoff = 10.0;
 	GLfloat spot_exponent = 10;
@@ -136,7 +145,9 @@ void RenderGround()
 
 void myDisplay(void)
 {
+	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
 	glLoadIdentity();
 	glRotated(upAngle, 1, 0, 0);
