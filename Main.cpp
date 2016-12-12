@@ -7,7 +7,7 @@
 
 #define PI 3.14159265
 #define degToRad(x) ((x)*PI/180)
-//#pragma  comment(lib, "legacy_stdio_definitions.lib")
+#pragma  comment(lib, "legacy_stdio_definitions.lib")
 
 int WIDTH = glutGet(GLUT_SCREEN_WIDTH);
 int HEIGHT = glutGet(GLUT_SCREEN_HEIGHT);
@@ -154,7 +154,9 @@ void myDisplay(void)
 
 	// Draw house Model
 	glPushMatrix();
-	glRotatef(90.f, 1, 0, 0);
+	glTranslated(0, 2, 0);
+	glScaled(0.01, 0.01, 0.01);
+	//glRotatef(90.f, 1, 0, 0);
 	model_house.Draw();
 	glPopMatrix();
 
@@ -282,7 +284,7 @@ void myReshape(int w, int h)
 void LoadAssets()
 {
 	// Loading Model files
-	model_house.Load("Models/house/house.3ds");
+	model_house.Load("Models/horse1/horse.3ds");
 	model_tree.Load("Models/tree/Tree1.3ds");
 
 	// Loading texture files
