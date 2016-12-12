@@ -38,7 +38,7 @@ GLdouble fovy = 45.0;
 GLdouble aspectRatio = (GLdouble)WIDTH / (GLdouble)HEIGHT;
 GLdouble zNear = 0.1;
 GLdouble zFar = 1000;
-Vector Eye(20, 5, 20);
+Vector Eye(20, 1, 20);
 Vector At(Eye.x, Eye.y, Eye.z-10);
 Vector Up(0, 1, 0);
 GLdouble upAngle = -90;
@@ -57,20 +57,22 @@ GLTexture tex_ground;
 
 void setUpLights()
 {
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
+	printf("Angle %f Eyex %f Eyey %f Eyez %f \n", sideAngle, Eye.x, Eye.y, Eye.z);
 
-	GLfloat ambient[] = { 0.1f, 0.1f, 0.1, 1.0f };
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-
-	GLfloat diffuse[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-
-	GLfloat specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
-
-	GLfloat light_position[] = { 0.0f, 10.0f, 0.0f, 1.0f };
+	GLfloat light_diffuse[4] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat light_ambient[4] = { 0.2, 0.2, 0.2, 1.0 };
+	GLfloat light_specular[4] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat light_position[4] = { Eye.x, Eye.y, Eye.z, 1.0 };
+	GLfloat spot_direction[3] = { -cos(degToRad(270 - sideAngle)), 0, sin(degToRad(270 - sideAngle)) };
+	GLfloat spot_cutoff = 10.0;
+	GLfloat spot_exponent = 10;
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spot_direction);
+	glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, spot_cutoff);
+	glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, spot_exponent);
 }
 
 void setUpMaterial()
@@ -79,14 +81,16 @@ void setUpMaterial()
 	glEnable(GL_COLOR_MATERIAL);
 
 	// Sich will be assigneet Material Properties whd by glColor
-	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+	GLfloat lmodel_ambient[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
+	//glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
 	// Will be applied to all objects
 	GLfloat specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
 
 	// Set Material's Shine value (0->128)
-	GLfloat shininess[] = { 96.0f };
+	GLfloat shininess[] = { 30.0f };
 	glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
 }
 
@@ -98,7 +102,7 @@ void setUpCamera()
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_NORMALIZE);
-	setUpLights();
+	//setUpLights();
 	setUpMaterial();
 
 }
@@ -109,6 +113,8 @@ void RenderGround()
 	glColor3f(0.6, 0.6, 0.6);	// Dim the ground texture a bit
 	glEnable(GL_TEXTURE_2D);	// Enable 2D texturing
 	glBindTexture(GL_TEXTURE_2D, tex_ground.texture[0]);	// Bind the ground texture
+
+	setUpLights();
 
 	glPushMatrix();
 	glBegin(GL_QUADS);
@@ -283,7 +289,7 @@ void LoadAssets()
 {
 	// Loading Model files
 	model_house.Load("Models/house/house.3ds");
-	model_tree.Load("Models/tree/Tree1.3ds");
+	model_tree.Load("Models/tree/tree1.3ds");
 
 	// Loading texture files
 	tex_ground.Load("Textures/ground.bmp");
@@ -310,9 +316,9 @@ void main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(WIDTH, HEIGHT);
+	glutInitWindowSize(WIDTH/2, HEIGHT);
 	glutCreateWindow(title);
-	glutFullScreen();
+	//glutFullScreen();
 	glutSetCursor(GLUT_CURSOR_NONE);
 
 	glutDisplayFunc(myDisplay);
@@ -331,7 +337,7 @@ void main(int argc, char** argv)
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_NORMALIZE);
-	glEnable(GL_COLOR_MATERIAL);
+	//glEnable(GL_COLOR_MATERIAL);
 	glShadeModel(GL_SMOOTH);
 
 	glutMainLoop();
