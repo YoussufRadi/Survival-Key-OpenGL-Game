@@ -36,7 +36,7 @@ public:
 // 3D Projection Options
 GLdouble fovy = 45.0;
 GLdouble aspectRatio = (GLdouble)WIDTH / (GLdouble)HEIGHT;
-GLdouble zNear = 0.1;
+GLdouble zNear = 0.01;
 GLdouble zFar = 1000;
 Vector Eye(20, 1, 20);
 Vector At(Eye.x, Eye.y, Eye.z-10);
@@ -67,9 +67,9 @@ void print(int x, int y, char *string)
 }
 
 void sunLights() {
-	GLfloat light_diffuse[4] = { 0.4, 0.4, 0.0, 1.0 };
-	GLfloat light_ambient[4] = { 0.2, 0.2, 0.2, 1.0 };
-	GLfloat light_specular[4] = { 0.3, 0.3, 00.0, 1.0 };
+	GLfloat light_diffuse[4] = { 0.1, 0.1, 0.0, 0.1 };
+	GLfloat light_ambient[4] = { 0.2, 0.2, 0.1, 0.1 };
+	GLfloat light_specular[4] = { 0.3, 0.3, 0.0, 0.3 };
 	GLfloat light_position[4] = { 0, 0, -10, 0.0 }; // <- w = 1
 	GLfloat light_direction[3] = { 0, 0, 10};
 	glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
@@ -154,10 +154,8 @@ void RenderGround()
 
 void myDisplay(void)
 {
-	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
+	
 	glLoadIdentity();
 	glRotated(upAngle, 1, 0, 0);
 	glRotated(sideAngle, 0, 1, 0);
@@ -170,12 +168,20 @@ void myDisplay(void)
 
 	//Drawing Battery Life Bar
 	glPushMatrix();
+	glDisable(GL_LIGHTING);
+	glColor3d(0.2, 1, 0.2);
 	for (int i = 0; i < batteryLife / 10; i++){
 		glPushMatrix();
-		glTranslated(Eye.x + 1*i, Eye.y, Eye.z - 5);
+		glTranslated(Eye.x+.03, Eye.y+.03, Eye.z);
+		glRotated(-upAngle, 1, 0, 0);
+		glRotated(-sideAngle, 0, 1, 0);
+		glTranslated(0.005*i, 0, -0.1);
+		glScaled(0.005, 0.005, 0.005);
 		glutSolidCube(1);
 		glPopMatrix();
 	}
+	glEnable(GL_LIGHTING);
+	glColor3d(1, 1, 1);
 	glPopMatrix();
 
 	// Draw Tree Model
@@ -377,3 +383,22 @@ void main(int argc, char** argv)
 
 	glutMainLoop();
 }
+
+//glDisable(GL_LIGHTING);
+//glPushMatrix();
+//glTranslated(Eye.x, Eye.y, Eye.z);
+//glRotated(-upAngle, 1, 0, 0);
+//glRotated(-sideAngle, 0, 1, 0);
+//glTranslated(0.005, 0, -0.1);
+//glScaled(0.005, 0.005, 0.005);
+//glPushMatrix();
+//glTranslated(0, 0, 1);
+//print(0, 0, "sadasdsads sdad wqewq e sadasd sa d ");
+//glPopMatrix();
+//glPushMatrix();
+//glTranslated(2.3, 0, 0);
+//glScaled(7, 0.7, 1);
+//glutSolidCube(1);
+//glPopMatrix();
+//glPopMatrix();
+//glEnable(GL_LIGHTING);
