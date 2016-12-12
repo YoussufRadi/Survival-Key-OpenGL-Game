@@ -57,13 +57,13 @@ GLTexture tex_ground;
 
 void setUpLights()
 {
-	printf("Angle %f Eyex %f Eyey %f Eyez %f \n", sideAngle, Eye.x, Eye.y, Eye.z);
+	printf("Angle %f Eyex %f Eyey %f Eyez %f \n", upAngle, Eye.x, Eye.y, Eye.z);
 
 	GLfloat light_diffuse[4] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light_ambient[4] = { 0.2, 0.2, 0.2, 1.0 };
 	GLfloat light_specular[4] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light_position[4] = { Eye.x, Eye.y, Eye.z, 1.0 };
-	GLfloat spot_direction[3] = { -cos(degToRad(270 - sideAngle)), 0, sin(degToRad(270 - sideAngle)) };
+	GLfloat spot_direction[3] = { -cos(degToRad(270 - sideAngle)), -sin(degToRad(upAngle)), sin(degToRad(270 - sideAngle)) };
 	GLfloat spot_cutoff = 10.0;
 	GLfloat spot_exponent = 10;
 	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
