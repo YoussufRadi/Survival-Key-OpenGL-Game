@@ -64,6 +64,19 @@ void print(int x, int y, char *string)
 		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, string[i]);
 }
 
+void sunLights() {
+	GLfloat light_diffuse[4] = { 0.4, 0.4, 0.0, 1.0 };
+	GLfloat light_ambient[4] = { 0.2, 0.2, 0.2, 1.0 };
+	GLfloat light_specular[4] = { 0.3, 0.3, 00.0, 1.0 };
+	GLfloat light_position[4] = { 0, 0, -10, 0.0 }; // <- w = 1
+	GLfloat light_direction[3] = { 0, 0, 10};
+	glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
+	glLightfv(GL_LIGHT1, GL_POSITION, light_position);
+	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, light_direction);
+}
+
 void setUpLights()
 {
 	printf("Angle %f Eyex %f Eyey %f Eyez %f \n", upAngle, Eye.x, Eye.y, Eye.z);
@@ -71,7 +84,7 @@ void setUpLights()
 	GLfloat light_diffuse[4] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light_ambient[4] = { 0.2, 0.2, 0.2, 1.0 };
 	GLfloat light_specular[4] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_position[4] = { Eye.x, Eye.y, Eye.z+10, 1.0 };
+	GLfloat light_position[4] = { Eye.x + 5, Eye.y + 0.3, Eye.z + 15, 1.0 };
 	GLfloat spot_direction[3] = { -cos(degToRad(270 - sideAngle)), -sin(degToRad(upAngle)), sin(degToRad(270 - sideAngle)) };
 	GLfloat spot_cutoff = 10.0;
 	GLfloat spot_exponent = 10;
@@ -90,12 +103,12 @@ void setUpMaterial()
 	glEnable(GL_COLOR_MATERIAL);
 
 	// Sich will be assigneet Material Properties whd by glColor
-	GLfloat lmodel_ambient[] = { 0.1f, 0.1f, 0.1f, 1.0f };
+	GLfloat lmodel_ambient[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
-	//glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
 	// Will be applied to all objects
-	GLfloat specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	GLfloat specular[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
 
 	// Set Material's Shine value (0->128)
@@ -111,20 +124,16 @@ void setUpCamera()
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_NORMALIZE);
-	//setUpLights();
 	setUpMaterial();
 
 }
 
 void RenderGround()
 {
-	glDisable(GL_LIGHTING);	// Disable lighting 
+	//glDisable(GL_LIGHTING);	// Disable lighting 
 	glColor3f(0.6, 0.6, 0.6);	// Dim the ground texture a bit
 	glEnable(GL_TEXTURE_2D);	// Enable 2D texturing
 	glBindTexture(GL_TEXTURE_2D, tex_ground.texture[0]);	// Bind the ground texture
-
-	setUpLights();
-
 	glPushMatrix();
 	glBegin(GL_QUADS);
 	glNormal3f(0, 1, 0);	// Set quad normal direction.
@@ -139,7 +148,7 @@ void RenderGround()
 	glEnd();
 	glPopMatrix();
 
-	glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
+	//glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
 	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
 }
 
@@ -154,10 +163,7 @@ void myDisplay(void)
 	glRotated(sideAngle, 0, 1, 0);
 	gluLookAt(Eye.x, Eye.y, Eye.z, Eye.x, Eye.y, Eye.z-10, Up.x, Up.y, Up.z);
 
-	GLfloat lightIntensity[] = { 0.7, 0.7, 0.7, 1.0f };
-	GLfloat lightPosition[] = {0.0f, 100.0f, 0.0f, 0.0f };
-	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, lightIntensity);
+	setUpLights();
 
 	// Draw Ground
 	RenderGround();
@@ -327,7 +333,7 @@ void main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(WIDTH/2, HEIGHT);
+	glutInitWindowSize(WIDTH, HEIGHT);
 	glutCreateWindow(title);
 	//glutFullScreen();
 	glutSetCursor(GLUT_CURSOR_NONE);
@@ -341,15 +347,18 @@ void main(int argc, char** argv)
 	glutReshapeFunc(myReshape);
 
 	glClearColor(0.0, 0.0, 0.0, 0.0);
-	setUpCamera();
-	LoadAssets();
-	
+
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHT1);
 	glEnable(GL_NORMALIZE);
 	//glEnable(GL_COLOR_MATERIAL);
 	glShadeModel(GL_SMOOTH);
+
+	setUpCamera();
+	LoadAssets();
+	sunLights();
 
 	glutMainLoop();
 }

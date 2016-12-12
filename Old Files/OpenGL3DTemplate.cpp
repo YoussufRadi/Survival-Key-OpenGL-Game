@@ -31,6 +31,17 @@ void startAgain(){
 	angle = 0;
 }
 
+void sunLights() {
+	GLfloat light_diffuse[4] = { 0.4, 0.4, 0.0, 1.0 };
+	GLfloat light_ambient[4] = { 0.2, 0.2, 0.2, 1.0 };
+	GLfloat light_specular[4] = { 0.3, 0.3, 1.0, 1.0 };
+	GLfloat light_position[4] = { 1.0, 1.0, 1.0, 1.0 }; // <- w = 1
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+}
+
 void setupLights() {
 	GLfloat ambient[] = { 0.9f, 0.9f, 0.9f, 1 };
 	GLfloat diffuse[] = { 0.8f, 0.8f, 0.8f, 0.9f };
