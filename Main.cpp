@@ -13,7 +13,8 @@ int WIDTH = glutGet(GLUT_SCREEN_WIDTH);
 int HEIGHT = glutGet(GLUT_SCREEN_HEIGHT);
 
 GLuint tex;
-char title[] = "3D Survival Game";
+char title[] = "Key To Survival";
+
 
 //int keyLocations [4][4] = { { 20, 1, 3, 0},
 //							{ -8, 1, -5, 0},
@@ -41,12 +42,22 @@ public:
 };
 
 int keyCount = 0;
-const int keysAmount = 3;
-Vector key0(20, 1, 3);
-Vector key1(-8, 1, -5);
-Vector key2(10, 1, -23);
-Vector keyLocations[] = { key0, key1, key2 };
-bool keysTaken[] = { false, false, false };
+const int keysAmount = 5;
+Vector key0(12.15, 1, 0.4);
+Vector key1(-79.6, 0, 0.36);
+Vector key2(-70.76, 0, 30);
+Vector key3(89, 2, 76);
+Vector key4(0.984, 0, -74.58);
+Vector keyLocations[] = { key0, key1, key2, key3, key4};
+bool keysTaken[] = { false, false, false, false, false};
+
+const int batteriesAmount = 4;
+Vector battery0(-70.5987, 0, -2.65);
+Vector battery1(-69, 0, -71);
+Vector battery2(87.19, 0, -54.37);
+Vector battery3(-84.804683, 0, 31.835105);
+Vector batteryLocations[] = { battery0, battery1, battery2, battery3 };
+bool batteriesTaken[] = { false, false, false, false, false };
 
 
 // 3D Projection Options
@@ -54,11 +65,12 @@ GLdouble fovy = 45.0;
 GLdouble aspectRatio = (GLdouble)WIDTH / (GLdouble)HEIGHT;
 GLdouble zNear = 0.01;
 GLdouble zFar = 1000;
-Vector Eye(20, 1, 20);
+Vector Eye(20, 2, 20);
 Vector At(Eye.x, Eye.y, Eye.z - 10);
 Vector Up(0, 1, 0);
 GLdouble upAngle = -90;
 GLdouble sideAngle = 180;
+double skyAngle = 90;
 int mouseXOld = 0;
 int mouseYOld = 0;
 
@@ -67,12 +79,54 @@ int cameraZoom = 0;
 double batteryLife = 100;
 
 // Model Variables
-Model_3DS model_house;
-Model_3DS model_tree;
+Model_3DS asian_house;
+Model_3DS barrels;
+Model_3DS tree_house;
+Model_3DS bathroom;
+Model_3DS swamp_house;
+Model_3DS maple_tree;
+Model_3DS tree;
+Model_3DS house;
+Model_3DS key;
+Model_3DS battery;
+
+#pragma region
+
+double treesPos[2][2];
+double fencesPos[2][2];
+
+Vector D0(-52, 0, 30);
+Vector D1(-88, 0, 30);
+Vector D2(-88, 0, 66);
+Vector D3(-52, 0, 66);
+Vector E0(-83, 0, 2);
+Vector E1(-62, 0, 3);
+Vector E2(-70, 0, -10);
+Vector E3(-70, 0, -10);
+Vector I0(-65, 0, -68);
+Vector I1(-65, 0, -81);
+Vector I2(-84, 0, -81);
+Vector I3(-84, 0, -68);
+Vector H0(-2, 0, 2);
+Vector H1(14, 0, 2);
+Vector H2(14, 0, -2);
+Vector H3(-2, 0, -2);
+Vector C0(62, 0, 56);
+Vector C1(62, 0, 94);
+Vector C2(88, 0, 94);
+Vector C3(88, 0, 56);
+Vector B0(95, 0, -27);
+Vector B1(95, 0, -64);
+Vector B2(60, 0, -64);
+Vector B3(58, 0, -27);
+
+Vector buildingsPos[24] = { D0, D1 ,D2, D3, E0, E1 ,E2, E3 , I0, I1 ,I2, I3 , H0, H1 ,H2, H3, C0, C1 ,C2, C3 , B0, B1 ,B2, B3 };
+#pragma endregion
 
 // Textures
 GLTexture tex_ground;
 GLTexture tex_key;
+
 
 void print(int x, int y, char *string)
 {
@@ -96,13 +150,21 @@ void nightLights() {
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, light_direction);
 }
 
+void drawTree(double x, double z) {
+	glPushMatrix();
+	glTranslatef(x, 8.5, z);
+	glScalef(6, 6, 6);
+	maple_tree.Draw();
+	glPopMatrix();
+}
+
 void setUpLights()
 {
 	GLfloat light_diffuse[4] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light_ambient[4] = { 0.2, 0.2, 0.2, 1.0 };
 	GLfloat light_specular[4] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_position[4] = { Eye.x, Eye.y, Eye.z, 1.0 };
-	GLfloat spot_direction[3] = { -cos(degToRad(270 - sideAngle)) * 20, -sin(degToRad(upAngle)) * 20, sin(degToRad(270 - sideAngle)) * 20 };
+	GLfloat light_position[4] = { Eye.x, Eye.y+0.5, Eye.z, 1.0 };
+	GLfloat spot_direction[3] = { -cos(degToRad(270 - sideAngle)) * 20, -sin(degToRad(upAngle)) * 20-.5, sin(degToRad(270 - sideAngle)) * 20 };
 	GLfloat spot_cutoff = batteryLife / 10;
 	GLfloat spot_exponent = 10;
 	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
@@ -155,18 +217,31 @@ void RenderGround()
 	glBegin(GL_QUADS);
 	glNormal3f(0, 1, 0);	// Set quad normal direction.
 	glTexCoord2f(0, 0);		// Set tex coordinates ( Using (0,0) -> (5,5) with texture wrapping set to GL_REPEAT to simulate the ground repeated grass texture).
-	glVertex3f(-20, 0, -20);
+	glVertex3f(-200, 0, -200);
 	glTexCoord2f(10, 0);
-	glVertex3f(20, 0, -20);
+	glVertex3f(200, 0, -200);
 	glTexCoord2f(10, 10);
-	glVertex3f(20, 0, 20);
+	glVertex3f(200, 0, 200);
 	glTexCoord2f(0, 10);
-	glVertex3f(-20, 0, 20);
+	glVertex3f(-200, 0, 200);
 	glEnd();
 	glPopMatrix();
 
 	//glEnable(GL_LIGHTING);	// Enable lighting again for other entites coming throung the pipeline.
 	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
+}
+
+void drawBatteries() {
+	for (int i = 0; i < batteriesAmount; i++)
+	{
+		if (batteriesTaken[i] == false) {
+			glPushMatrix();
+			glTranslated(batteryLocations[i].x, batteryLocations[i].y, batteryLocations[i].z);
+			glScaled(0.05, 0.05, 0.05);
+			battery.Draw();
+			glPopMatrix();
+		}
+	}
 }
 
 void drawKeys() {
@@ -182,25 +257,30 @@ void drawKeys() {
 		if (keysTaken[i] == false) {
 			glPushMatrix();
 			glTranslated(keyLocations[i].x, keyLocations[i].y, keyLocations[i].z);
-			glScaled(0.5, 0.5, 0.5);
-			glutSolidTeapot(1);
+			glScaled(0.05, 0.05, 0.05);
+			//glutSolidTeapot(1);
+			key.Draw();
 			glPopMatrix();
-		} else {
+		}
+		else {
 			glDisable(GL_LIGHTING);
 			glPushMatrix();
 			glTranslated(Eye.x + .03, Eye.y + .02, Eye.z);
 			glRotated(-upAngle, 1, 0, 0);
 			glRotated(-sideAngle, 0, 1, 0);
 			glTranslated(0.01*i, 0, -0.1);
-			glScaled(0.003, 0.003, 0.003);
-			glutSolidTeapot(1);
+			glRotated(90, 0, 1, 0);
+			glRotated(90, 0, 0, 1);
+			glScaled(0.0009, 0.0009, 0.0009);
+			//glutSolidTeapot(1);
+			key.Draw();
 			glPopMatrix();
 			glEnable(GL_LIGHTING);
 		}
 	}
 }
 
-void drawBattery(){
+void drawBatteryBar() {
 	glDisable(GL_LIGHTING);
 	glColor3d(0.2, 1, 0.2);
 	//for (int i = 0; i < batteryLife / 10; i++){
@@ -228,8 +308,8 @@ void myDisplay(void)
 	gluLookAt(Eye.x, Eye.y, Eye.z, Eye.x, Eye.y, Eye.z - 10, Up.x, Up.y, Up.z);
 
 
-		setUpLights();
-
+	setUpLights();
+	drawBatteries();
 	drawKeys();
 
 	// Draw Ground
@@ -237,19 +317,114 @@ void myDisplay(void)
 
 	//Drawing Battery Life Bar
 	if (batteryLife > 0)
-		drawBattery();
+		drawBatteryBar();
+
+	//Draw Swamp House Model
+	glPushMatrix();
+	glTranslated(-75, 0, 75);
+	glScaled(0.75, 0.75, 0.75);
+	asian_house.Draw();
+	glPopMatrix();
+
+	//Draw Barrels Model
+	glPushMatrix();
+	glTranslated(-75, 0, 0);
+	glScaled(0.4, 0.4, 0.4);
+	barrels.Draw();
+	glPopMatrix();
+
+	//Draw tree house Model
+	glPushMatrix();
+	glTranslated(-75, 0, -75);
+	glRotated(90, 1, 0, 0);
+	glScaled(3, 3, 3);
+	tree_house.Draw();
+	glPopMatrix();
 
 	// Draw Tree Model
 	glPushMatrix();
-	glTranslatef(10, 0, 0);
-	glScalef(0.7, 0.7, 0.7);
-	model_tree.Draw();
+	glTranslatef(0, 8.5, 75);
+	glScalef(6, 6, 6);
+	maple_tree.Draw();
 	glPopMatrix();
 
-	// Draw house Model
+	//Draw Bathroom Model
 	glPushMatrix();
-	glRotatef(90.f, 1, 0, 0);
-	model_house.Draw();
+	glTranslated(0, 0, 0);
+	glScaled(0.02, 0.02, 0.02);
+	bathroom.Draw();
+	glPopMatrix();
+
+	//Draw Bathroom Model
+	glPushMatrix();
+	glTranslated(4, 0, 0);
+	glScaled(0.02, 0.02, 0.02);
+	bathroom.Draw();
+	glPopMatrix();
+
+	//Draw Bathroom Model
+	glPushMatrix();
+	glTranslated(8, 0, 0);
+	glScaled(0.02, 0.02, 0.02);
+	bathroom.Draw();
+	glPopMatrix();
+
+	//Draw Bathroom Model
+	glPushMatrix();
+	glTranslated(12, 0, 0);
+	glScaled(0.02, 0.02, 0.02);
+	bathroom.Draw();
+	glPopMatrix();
+
+	// Draw Tree Model
+	glPushMatrix();
+	glTranslatef(0, 8.5, -75);
+	glScalef(6, 6, 6);
+	maple_tree.Draw();
+	glPopMatrix();
+
+	//Draw House Model
+	glPushMatrix();
+	glTranslated(75, 0, 75);
+	glScaled(0.05, 0.05, 0.05);
+	house.Draw();
+	glPopMatrix();
+
+
+	// Draw Tree Model
+	glPushMatrix();
+	glTranslatef(75, 8.5, 0);
+	glScalef(6, 6, 6);
+	maple_tree.Draw();
+	glPopMatrix();
+
+	// Draw Swamp House Model
+	glPushMatrix();
+	glTranslated(75, 0, -75);
+	swamp_house.Draw();
+	glPopMatrix();
+
+	//drawTree(-112.5, 112.5);
+	//drawTree(-112.5, 37.5);
+	//drawTree(-112.5, -37.5);
+	//drawTree(-112.5, -112.5);
+	//drawTree(-37.5, 112.5);
+	//drawTree(-37.5, 37.5);
+	//drawTree(-37.5, -37.5);
+	//drawTree(-37.5, -112.5);
+	//drawTree(37.5, 112.5);
+	//drawTree(37.5, 37.5);
+	//drawTree(37.5, -37.5);
+	//drawTree(37.5, -112.5);
+	//drawTree(112.5, 112.5);
+	//drawTree(112.5, 37.5);
+	//drawTree(112.5, -37.5);
+	//drawTree(112.5, -112.5);
+
+	// Draw Battery Model
+	glPushMatrix();
+	glTranslated(0, 0, 0);
+	battery.Draw();
 	glPopMatrix();
 
 	//sky box
@@ -257,11 +432,12 @@ void myDisplay(void)
 	GLUquadricObj * qobj;
 	qobj = gluNewQuadric();
 	glTranslated(50, 0, 0);
+	glRotated(skyAngle, 0, 1, 0);
 	glRotated(90, 1, 0, 1);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	gluQuadricTexture(qobj, true);
 	gluQuadricNormals(qobj, GL_SMOOTH);
-	gluSphere(qobj, 100, 100, 100);
+	gluSphere(qobj, 200, 100, 100);
 	gluDeleteQuadric(qobj);
 	glPopMatrix();
 	//glDisable(GL_TEXTURE_2D);
@@ -269,8 +445,32 @@ void myDisplay(void)
 	glutSwapBuffers();
 }
 
+bool checkForCollision(double x, double z) {
+	for (int i = 0; i < 23; i+=4)
+	{
+		double x1 = buildingsPos[i].x;
+		double z1 = buildingsPos[i].z;
+		double x2 = buildingsPos[i + 2].x;
+		double z2 = buildingsPos[i + 2].z;
+
+		double minx = min(x1, x2);
+		double maxx = max(x1, x2);
+
+		double minz = min(z1, z2);
+		double maxz = max(z1, z2);
+		//printf("minx %f\tmaxx %f\tminz %f\tmaxz %f\n");
+
+		if (x >= minx && x <= maxx && z >= minz && z <= maxz)return true;
+	}
+	return false;
+}
+
 void myKeyboard(unsigned char button, int x, int y)
 {
+
+	double prevX = Eye.x;
+	double prevZ = Eye.z;
+
 	switch (button)
 	{
 	case 'x':
@@ -301,7 +501,12 @@ void myKeyboard(unsigned char button, int x, int y)
 	default:
 		break;
 	}
+	//if (checkForCollision(Eye.x, Eye.z)) {
+	//	Eye.x = prevX;
+	//	Eye.z = prevZ;
+	//}
 
+	printf("x  = %f\t z = %f\n", Eye.x, Eye.z);
 	//printf("Eye.x: %f	 Eye.z: %f\n", Eye.x, Eye.z);
 	//printf("Range in %i to %i\n", tx - 1, tx + 1);
 
@@ -337,6 +542,16 @@ void actM(int button, int state, int x, int y)
 				printf("\n");
 			}
 		}
+		for (int i = 0; i < batteriesAmount; i++)
+		{
+			if (Eye.x <= batteryLocations[i].x + 5 && Eye.x >= batteryLocations[i].x - 5
+				&& Eye.z <= batteryLocations[i].z + 5 && Eye.z >= batteryLocations[i].z - 5
+				&& batteriesTaken[i] == false) {
+				batteriesTaken[i] = true;
+				batteryLife += 20;
+				batteryLife =(int) batteryLife%100;
+			}
+		}
 	}
 }
 
@@ -366,9 +581,17 @@ void myReshape(int w, int h)
 void LoadAssets()
 {
 	// Loading Model files
-	model_house.Load("Models/house/house.3ds");
-	model_tree.Load("Models/tree/tree1.3ds");
-
+	//model_house.Load("Models/house/house.3ds");
+	asian_house.Load("Models/house6/house.3ds");
+	barrels.Load("Models/barrel/barrel.3ds");
+	tree_house.Load("Models/house/house.3ds");
+	maple_tree.Load("Models/tree1/tree.3ds");
+	bathroom.Load("Models/bathroom/bathroom.3ds");
+	house.Load("Models/house4/house.3ds");
+	swamp_house.Load("Models/house1/house.3ds");
+	key.Load("Models/key/key.3ds");
+	battery.Load("Models/battery/battery.3ds");
+	tree.Load("Models/tree2/tree.3ds");
 	// Loading texture files
 	tex_ground.Load("Textures/grassground.bmp");
 	tex_key.Load("Textures/gold.bmp");
@@ -376,7 +599,7 @@ void LoadAssets()
 
 }
 
-void rotateCamera(){
+void rotateCamera() {
 	if (mouseXOld > (9 * WIDTH / 10))
 		sideAngle += 0.5;
 	if (mouseXOld < (WIDTH / 10))
@@ -387,8 +610,9 @@ void rotateCamera(){
 		sideAngle += 360;
 }
 
-void anim(){
-	batteryLife -= 0.01;
+void anim() {
+	//batteryLife -= 0.01;
+	skyAngle += 0.03;
 	rotateCamera();
 	glutPostRedisplay();
 }
