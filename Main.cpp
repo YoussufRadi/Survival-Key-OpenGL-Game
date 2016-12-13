@@ -7,7 +7,7 @@
 
 #define PI 3.14159265
 #define degToRad(x) ((x)*PI/180)
-#pragma  comment(lib, "legacy_stdio_definitions.lib")
+//#pragma  comment(lib, "legacy_stdio_definitions.lib")
 
 int WIDTH = glutGet(GLUT_SCREEN_WIDTH);
 int HEIGHT = glutGet(GLUT_SCREEN_HEIGHT);
