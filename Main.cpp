@@ -61,7 +61,8 @@ GLdouble sideAngle = 180;
 double skyAngle = 90;
 int mouseXOld = 0;
 int mouseYOld = 0;
-int gameMode = 0;
+int gameMode = 1;
+bool won = false;
 
 double jumpFactor = 280;
 bool jumpFlag = false;
@@ -137,7 +138,8 @@ void startAgain(){
 	jumpFactor = 280;
 	jumpFlag = false;
 	batteryLife = 100;
-	gameMode = 0;
+	gameMode = 1;
+	won = false;
 }
 
 void print(int x, int y, char *string)
@@ -211,6 +213,7 @@ void setUpCamera()
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+	gluLookAt(Eye.x, Eye.y, Eye.z, Eye.x, Eye.y, Eye.z - 10, Up.x, Up.y, Up.z);
 	gluPerspective(fovy, aspectRatio, zNear, zFar);
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_DEPTH_TEST);
@@ -312,125 +315,177 @@ void myDisplay(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	
-	
-	glLoadIdentity();
-	glRotated(upAngle, 1, 0, 0);
-	glRotated(sideAngle, 0, 1, 0);
-	gluLookAt(Eye.x, Eye.y, Eye.z, Eye.x, Eye.y, Eye.z - 10, Up.x, Up.y, Up.z);
+	switch (gameMode){
+		case 0:
+			glDisable(GL_LIGHTING);
+			glLoadIdentity();
+			gluLookAt(Eye.x, Eye.y, Eye.z, Eye.x, Eye.y, Eye.z - 10, Up.x, Up.y, Up.z);
+			glPushMatrix();
+			glTranslated(Eye.x -.4, Eye.y, Eye.z-2);
+			glColor3d(1, 0, 0);
+			print(0, 0, "Game Over You Lost :( Press Enter To Start Again");
+			glPushMatrix();
+			glScaled(1, 0.1, 1);
+			glTranslated(.38, 0, -.5);
+			glutSolidCube(1);
+			glPopMatrix();
+			glPopMatrix();
+			glEnable(GL_LIGHTING);
+			break;
+		case 1:
+			if (!won){
+				if (gameMode == 1){
+				glLoadIdentity();
+				glRotated(upAngle, 1, 0, 0);
+				glRotated(sideAngle, 0, 1, 0);
+				gluLookAt(Eye.x, Eye.y, Eye.z, Eye.x, Eye.y, Eye.z - 10, Up.x, Up.y, Up.z);
 
-	setUpLights();
+				setUpLights();
+				}
+			}
+			else {
+				glDisable(GL_LIGHTING);
+				glPushMatrix();
+				glTranslated(Eye.x - .4, Eye.y, Eye.z - 2);
+				glColor3d(1, 0, 0);
+				print(0, 0, "Congrats You Won :D  Press Enter To Start Again");
+				glPushMatrix();
+				glScaled(1, 0.1, 1);
+				glTranslated(.38, 0, -.5);
+				glutSolidCube(1);
+				glPopMatrix();
+				glPopMatrix();
+				glEnable(GL_LIGHTING);
+			}
 
-	drawBatteries();
+			drawBatteries();
 
-	drawKeys();
+			drawKeys();
 
-	// Draw Ground
-	RenderGround();
+			// Draw Ground
+			RenderGround();
 
-	//Drawing Battery Life Bar
-	if (batteryLife > 0)
-		drawBatteryBar();
+			//Drawing Battery Life Bar
+			if (batteryLife > 0)
+				drawBatteryBar();
 
-	//Draw Swamp House Model
-	glPushMatrix();
-	glTranslated(-75, 0, 75);
-	glScaled(0.75, 0.75, 0.75);
-	asian_house.Draw();
-	glPopMatrix();
+			//Draw Swamp House Model
+			glPushMatrix();
+			glTranslated(-75, 0, 75);
+			glScaled(0.75, 0.75, 0.75);
+			asian_house.Draw();
+			glPopMatrix();
 
-	//Draw Barrels Model
-	glPushMatrix();
-	glTranslated(-75, 0, 0);
-	glScaled(0.4, 0.4, 0.4);
-	barrels.Draw();
-	glPopMatrix();
+			//Draw Barrels Model
+			glPushMatrix();
+			glTranslated(-75, 0, 0);
+			glScaled(0.4, 0.4, 0.4);
+			barrels.Draw();
+			glPopMatrix();
 
-	//Draw tree house Model
-	glPushMatrix();
-	glTranslated(-75, 0, -75);
-	glRotated(90, 1, 0, 0);
-	glScaled(3, 3, 3);
-	tree_house.Draw();
-	glPopMatrix();
+			//Draw tree house Model
+			glPushMatrix();
+			glTranslated(-75, 0, -75);
+			glRotated(90, 1, 0, 0);
+			glScaled(3, 3, 3);
+			tree_house.Draw();
+			glPopMatrix();
 
-	// Draw Tree Model
-	glPushMatrix();
-	glTranslatef(0, 8.5, 75);
-	glScalef(6, 6, 6);
-	maple_tree.Draw();
-	glPopMatrix();
+			// Draw Tree Model
+			glPushMatrix();
+			glTranslatef(0, 8.5, 75);
+			glScalef(6, 6, 6);
+			maple_tree.Draw();
+			glPopMatrix();
 
-	//Draw Bathroom Model
-	glPushMatrix();
-	glTranslated(0, 0, 0);
-	glScaled(0.02, 0.02, 0.02);
-	bathroom.Draw();
-	glPopMatrix();
+			//Draw Bathroom Model
+			glPushMatrix();
+			glTranslated(0, 0, 0);
+			glScaled(0.02, 0.02, 0.02);
+			bathroom.Draw();
+			glPopMatrix();
 
-	//Draw Bathroom Model
-	glPushMatrix();
-	glTranslated(4, 0, 0);
-	glScaled(0.02, 0.02, 0.02);
-	bathroom.Draw();
-	glPopMatrix();
+			//Draw Bathroom Model
+			glPushMatrix();
+			glTranslated(4, 0, 0);
+			glScaled(0.02, 0.02, 0.02);
+			bathroom.Draw();
+			glPopMatrix();
 
-	//Draw Bathroom Model
-	glPushMatrix();
-	glTranslated(8, 0, 0);
-	glScaled(0.02, 0.02, 0.02);
-	bathroom.Draw();
-	glPopMatrix();
+			//Draw Bathroom Model
+			glPushMatrix();
+			glTranslated(8, 0, 0);
+			glScaled(0.02, 0.02, 0.02);
+			bathroom.Draw();
+			glPopMatrix();
 
-	//Draw Bathroom Model
-	glPushMatrix();
-	glTranslated(12, 0, 0);
-	glScaled(0.02, 0.02, 0.02);
-	bathroom.Draw();
-	glPopMatrix();
+			//Draw Bathroom Model
+			glPushMatrix();
+			glTranslated(12, 0, 0);
+			glScaled(0.02, 0.02, 0.02);
+			bathroom.Draw();
+			glPopMatrix();
 
-	// Draw Tree Model
-	glPushMatrix();
-	glTranslatef(0, 8.5, -75);
-	glScalef(6, 6, 6);
-	maple_tree.Draw();
-	glPopMatrix();
+			// Draw Tree Model
+			glPushMatrix();
+			glTranslatef(0, 8.5, -75);
+			glScalef(6, 6, 6);
+			maple_tree.Draw();
+			glPopMatrix();
 
-	//Draw House Model
-	glPushMatrix();
-	glTranslated(75, 0, 75);
-	glScaled(0.05, 0.05, 0.05);
-	house.Draw();
-	glPopMatrix();
+			//Draw House Model
+			glPushMatrix();
+			glTranslated(75, 0, 75);
+			glScaled(0.05, 0.05, 0.05);
+			house.Draw();
+			glPopMatrix();
 
 
-	// Draw Tree Model
-	glPushMatrix();
-	glTranslatef(75, 8.5, 0);
-	glScalef(6, 6, 6);
-	maple_tree.Draw();
-	glPopMatrix();
+			// Draw Tree Model
+			glPushMatrix();
+			glTranslatef(75, 8.5, 0);
+			glScalef(6, 6, 6);
+			maple_tree.Draw();
+			glPopMatrix();
 
-	// Draw Swamp House Model
-	glPushMatrix();
-	glTranslated(75, 0, -75);
-	swamp_house.Draw();
-	glPopMatrix();
+			// Draw Swamp House Model
+			glPushMatrix();
+			glTranslated(75, 0, -75);
+			swamp_house.Draw();
+			glPopMatrix();
 
-	//sky box
-	glPushMatrix();
-	GLUquadricObj * qobj;
-	qobj = gluNewQuadric();
-	glTranslated(0, 0, 0);
-	glRotated(skyAngle, 0, 1, 0);
-	glRotated(90, 1, 0, 1);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	gluQuadricTexture(qobj, true);
-	gluQuadricNormals(qobj, GL_SMOOTH);
-	gluSphere(qobj, 200, 100, 100);
-	gluDeleteQuadric(qobj);
-	glPopMatrix();
-	//glDisable(GL_TEXTURE_2D);
+			//sky box
+			glPushMatrix();
+			GLUquadricObj * qobj;
+			qobj = gluNewQuadric();
+			glTranslated(0, 0, 0);
+			glRotated(skyAngle, 0, 1, 0);
+			glRotated(90, 1, 0, 1);
+			glBindTexture(GL_TEXTURE_2D, tex);
+			gluQuadricTexture(qobj, true);
+			gluQuadricNormals(qobj, GL_SMOOTH);
+			gluSphere(qobj, 200, 100, 100);
+			gluDeleteQuadric(qobj);
+			glPopMatrix();
+			//glDisable(GL_TEXTURE_2D);
+			break;
+	case 2:
+			glDisable(GL_LIGHTING);
+			glLoadIdentity();
+			gluLookAt(Eye.x, Eye.y, Eye.z, Eye.x, Eye.y, Eye.z - 10, Up.x, Up.y, Up.z);
+			glPushMatrix();
+			glTranslated(Eye.x - .4, Eye.y, Eye.z - 2);
+			glColor3d(1, 0, 0);
+			print(0, 0, "Congrats You Won :D Press Enter To Start Again");
+			glPushMatrix();
+			glScaled(1, 0.1, 1);
+			glTranslated(.38, 0, -.5);
+			glutSolidCube(1);
+			glPopMatrix();
+			glPopMatrix();
+			glEnable(GL_LIGHTING);
+			break;
+	}
 
 	glutSwapBuffers();
 }
@@ -569,8 +624,8 @@ void actM(int button, int state, int x, int y)
 				&& keysTaken[i] == false) {
 				keysTaken[i] = true;
 				keyCount++;
-				printf("Key Count: %i", keyCount);
-				printf("\n");
+				if (keyCount == 1)
+					gameMode = 2;
 			}
 		}
 		for (int i = 0; i < batteriesAmount; i++)
@@ -649,7 +704,10 @@ void anim() {
 		if (jumpFactor == 270)
 			jumpFlag = false;
 	}
-	batteryLife -= 0.1;
+	if (batteryLife > 0)
+		batteryLife -= 0.1;
+	else if(gameMode ==1)
+		gameMode = 0;
 	skyAngle += 0.1;
 	rotateCamera();
 	glutPostRedisplay();
@@ -677,7 +735,7 @@ void main(int argc, char** argv)
 	glutIdleFunc(anim);
 	glutReshapeFunc(myReshape);
 
-	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClearColor(1, 1, 1, 1);
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
