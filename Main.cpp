@@ -13,7 +13,8 @@ int WIDTH = glutGet(GLUT_SCREEN_WIDTH);
 int HEIGHT = glutGet(GLUT_SCREEN_HEIGHT);
 
 GLuint tex;
-char title[] = "3D Survival Game";
+char title[] = "Key To Survival";
+
 
 //int keyLocations [4][4] = { { 20, 1, 3, 0},
 //							{ -8, 1, -5, 0},
@@ -59,6 +60,7 @@ Vector At(Eye.x, Eye.y, Eye.z - 10);
 Vector Up(0, 1, 0);
 GLdouble upAngle = -90;
 GLdouble sideAngle = 180;
+double skyAngle = 90;
 int mouseXOld = 0;
 int mouseYOld = 0;
 
@@ -76,6 +78,40 @@ Model_3DS maple_tree;
 Model_3DS house;
 Model_3DS key;
 Model_3DS battery;
+
+#pragma
+
+double buildingsPos[24][2];
+double treesPos[2][2];
+double fencesPos[2][2];
+
+Vector D(-52, 0, 30);
+Vector D(-88, 0, 30);
+Vector D(-88, 0, 66);
+Vector D(-52, 0, 66);
+Vector E(-83, 0, 2);
+Vector E(-62, 0, 3);
+Vector E(-70, 0, -10);
+Vector E(-70, 0, -10);
+Vector I(-65, 0, -68);
+Vector I(-65, 0, -81);
+Vector I(-84, 0, -81);
+Vector I(-84, 0, -68);
+Vector H(-2, 0, -2);
+Vector H(14, 0, 2);
+Vector H(14, 0, -2);
+Vector H(-2, 0, -2);
+Vector C(62, 0, 56);
+Vector C(62, 0, 94);
+Vector C(88, 0, 94);
+Vector C(88, 0, 56);
+Vector B(95, 0, -27);
+Vector B(95, 0, -64);
+Vector B(60, 0, -64);
+Vector B(58, 0, -27);
+
+
+
 
 // Textures
 GLTexture tex_ground;
@@ -301,6 +337,13 @@ void myDisplay(void)
 	bathroom.Draw();
 	glPopMatrix();
 
+	//Draw Bathroom Model
+	glPushMatrix();
+	glTranslated(12, 0, 0);
+	glScaled(0.02, 0.02, 0.02);
+	bathroom.Draw();
+	glPopMatrix();
+
 	// Draw Tree Model
 	glPushMatrix();
 	glTranslatef(0, 8.5, -75);
@@ -340,12 +383,13 @@ void myDisplay(void)
 	glPushMatrix();
 	GLUquadricObj * qobj;
 	qobj = gluNewQuadric();
+	glRotated(skyAngle, 0, 1, 0);
 	glTranslated(50, 0, 0);
 	glRotated(90, 1, 0, 1);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	gluQuadricTexture(qobj, true);
 	gluQuadricNormals(qobj, GL_SMOOTH);
-	gluSphere(qobj, 300, 100, 100);
+	gluSphere(qobj, 150, 100, 100);
 	gluDeleteQuadric(qobj);
 	glPopMatrix();
 	//glDisable(GL_TEXTURE_2D);
@@ -385,7 +429,7 @@ void myKeyboard(unsigned char button, int x, int y)
 	default:
 		break;
 	}
-
+	printf("x  = %f\t z = %f\n", Eye.x, Eye.z);
 	//printf("Eye.x: %f	 Eye.z: %f\n", Eye.x, Eye.z);
 	//printf("Range in %i to %i\n", tx - 1, tx + 1);
 
@@ -480,6 +524,7 @@ void rotateCamera() {
 
 void anim() {
 	//batteryLife -= 0.01;
+	skyAngle += 0.03;
 	rotateCamera();
 	glutPostRedisplay();
 }
