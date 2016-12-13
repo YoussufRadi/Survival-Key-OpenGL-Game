@@ -624,7 +624,7 @@ void actM(int button, int state, int x, int y)
 				&& keysTaken[i] == false) {
 				keysTaken[i] = true;
 				keyCount++;
-				if (keyCount == 1)
+				if (keyCount == keysAmount)
 					gameMode = 2;
 			}
 		}
