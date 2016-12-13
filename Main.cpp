@@ -15,24 +15,12 @@ int HEIGHT = glutGet(GLUT_SCREEN_HEIGHT);
 GLuint tex;
 char title[] = "Key To Survival";
 
-
-//int keyLocations [4][4] = { { 20, 1, 3, 0},
-//							{ -8, 1, -5, 0},
-//							{ 20, 74, 67, 0},
-//							{ 11, 18, 14, 0} };
-
-
-
 class Vector
 {
 public:
 	GLdouble x, y, z;
 	Vector() {}
 	Vector(GLdouble _x, GLdouble _y, GLdouble _z) : x(_x), y(_y), z(_z) {}
-	//================================================================================================//
-	// Operator Overloading; In C++ you can override the behavior of operators for you class objects. //
-	// Here we are overloading the += operator to add a given value to all vector coordinates.        //
-	//================================================================================================//
 	void operator +=(float value)
 	{
 		x += value;
@@ -73,8 +61,10 @@ GLdouble sideAngle = 180;
 double skyAngle = 90;
 int mouseXOld = 0;
 int mouseYOld = 0;
+int gameMode = 0;
 
-
+double jumpFactor = 280;
+bool jumpFlag = false;
 double batteryLife = 100;
 
 // Model Variables
@@ -126,6 +116,29 @@ Vector buildingsPos[24] = { D0, D1 ,D2, D3, E0, E1 ,E2, E3 , I0, I1 ,I2, I3 , H0
 GLTexture tex_ground;
 GLTexture tex_key;
 
+
+void startAgain(){
+	keyCount = 0;
+	keysTaken[0] = false;
+	keysTaken[1] = false;
+	keysTaken[2] = false;
+	keysTaken[3] = false;
+	keysTaken[4] = false;
+	batteriesTaken[0] = false;
+	batteriesTaken[1] = false;
+	batteriesTaken[2] = false;
+	batteriesTaken[3] = false;
+	Eye.x = 20;
+	Eye.y = 2;
+	Eye.z = 20;
+	upAngle = 0;
+	sideAngle = 180;
+	skyAngle = 90;
+	jumpFactor = 280;
+	jumpFlag = false;
+	batteryLife = 100;
+	gameMode = 0;
+}
 
 void print(int x, int y, char *string)
 {
@@ -270,7 +283,7 @@ void drawKeys() {
 			glTranslated(0.01*(i-3), 0, -0.1);
 			glRotated(90, 0, 1, 0);
 			glRotated(90, 0, 0, 1);
-			glScaled(0.0009, 0.0009, 0.0009);
+			glScaled(0.0007, 0.0007, 0.0007);
 			//glutSolidTeapot(1);
 			key.Draw();
 			glPopMatrix();
@@ -299,11 +312,12 @@ void myDisplay(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	
+	
 	glLoadIdentity();
 	glRotated(upAngle, 1, 0, 0);
 	glRotated(sideAngle, 0, 1, 0);
 	gluLookAt(Eye.x, Eye.y, Eye.z, Eye.x, Eye.y, Eye.z - 10, Up.x, Up.y, Up.z);
-
 
 	setUpLights();
 
@@ -440,6 +454,11 @@ bool checkForCollision(double x, double z) {
 	return false;
 }
 
+void jump(){
+	jumpFactor = 90; 
+	jumpFlag = true;
+}
+
 void myKeyboard(unsigned char button, int x, int y)
 {
 
@@ -504,9 +523,16 @@ void myKeyboard(unsigned char button, int x, int y)
 		break;
 	case 27:
 		exit(0);
+		break; 
+	case 32:
+		if (!jumpFlag)
+			jump();
+			break;
+	case 13:
+		startAgain();
 		break;
 	default:
-		break;
+			break;
 	}
 
 	if (checkForCollision(Eye.x, Eye.z)) {
@@ -616,6 +642,13 @@ void rotateCamera() {
 }
 
 void anim() {
+	if (jumpFactor <= 270){
+		Eye.y += sin(degToRad(jumpFactor));
+		printf("jumpFactor is %f, sin value is %f \n", jumpFactor, sin(degToRad(jumpFactor)));
+		jumpFactor += 10;
+		if (jumpFactor == 270)
+			jumpFlag = false;
+	}
 	batteryLife -= 0.1;
 	skyAngle += 0.1;
 	rotateCamera();
