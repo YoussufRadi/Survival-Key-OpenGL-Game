@@ -57,7 +57,7 @@ Vector battery1(-69, 0, -71);
 Vector battery2(87.19, 0, -54.37);
 Vector battery3(-84.804683, 0, 31.835105);
 Vector batteryLocations[] = { battery0, battery1, battery2, battery3 };
-bool batteriesTaken[] = { false, false, false, false, false };
+bool batteriesTaken[] = { false, false, false, false};
 
 
 // 3D Projection Options
@@ -74,7 +74,6 @@ double skyAngle = 90;
 int mouseXOld = 0;
 int mouseYOld = 0;
 
-int cameraZoom = 0;
 
 double batteryLife = 100;
 
@@ -237,7 +236,7 @@ void drawBatteries() {
 		if (batteriesTaken[i] == false) {
 			glPushMatrix();
 			glTranslated(batteryLocations[i].x, batteryLocations[i].y, batteryLocations[i].z);
-			glScaled(0.05, 0.05, 0.05);
+			glScaled(0.5, 0.5, 0.5);
 			battery.Draw();
 			glPopMatrix();
 		}
@@ -309,7 +308,9 @@ void myDisplay(void)
 
 
 	setUpLights();
+
 	drawBatteries();
+
 	drawKeys();
 
 	// Draw Ground
@@ -404,34 +405,11 @@ void myDisplay(void)
 	swamp_house.Draw();
 	glPopMatrix();
 
-	//drawTree(-112.5, 112.5);
-	//drawTree(-112.5, 37.5);
-	//drawTree(-112.5, -37.5);
-	//drawTree(-112.5, -112.5);
-	//drawTree(-37.5, 112.5);
-	//drawTree(-37.5, 37.5);
-	//drawTree(-37.5, -37.5);
-	//drawTree(-37.5, -112.5);
-	//drawTree(37.5, 112.5);
-	//drawTree(37.5, 37.5);
-	//drawTree(37.5, -37.5);
-	//drawTree(37.5, -112.5);
-	//drawTree(112.5, 112.5);
-	//drawTree(112.5, 37.5);
-	//drawTree(112.5, -37.5);
-	//drawTree(112.5, -112.5);
-
-	// Draw Battery Model
-	glPushMatrix();
-	glTranslated(0, 0, 0);
-	battery.Draw();
-	glPopMatrix();
-
 	//sky box
 	glPushMatrix();
 	GLUquadricObj * qobj;
 	qobj = gluNewQuadric();
-	glTranslated(50, 0, 0);
+	glTranslated(0, 0, 0);
 	glRotated(skyAngle, 0, 1, 0);
 	glRotated(90, 1, 0, 1);
 	glBindTexture(GL_TEXTURE_2D, tex);
@@ -482,18 +460,50 @@ void myKeyboard(unsigned char button, int x, int y)
 	case 'w':
 		Eye.z += -cos(degToRad(sideAngle));
 		Eye.x += sin(degToRad(sideAngle));
+		if (Eye.z > 100)
+			Eye.z = 100;
+		if (Eye.z < -100)
+			Eye.z = -100;
+		if (Eye.x > 100)
+			Eye.x = 100;
+		if (Eye.x < -100)
+			Eye.x = -100;
 		break;
 	case  'a':
 		Eye.x += cos(degToRad(180 - sideAngle));
 		Eye.z += -sin(degToRad(180 - sideAngle));
+		if (Eye.z > 100)
+			Eye.z = 100;
+		if (Eye.z < -100)
+			Eye.z = -100;
+		if (Eye.x > 100)
+			Eye.x = 100;
+		if (Eye.x < -100)
+			Eye.x = -100;
 		break;
 	case  's':
 		Eye.z += cos(degToRad(sideAngle));
 		Eye.x += -sin(degToRad(sideAngle));
+		if (Eye.z > 100)
+			Eye.z = 100;
+		if (Eye.z < -100)
+			Eye.z = -100;
+		if (Eye.x > 100)
+			Eye.x = 100;
+		if (Eye.x < -100)
+			Eye.x = -100;
 		break;
 	case  'd':
 		Eye.x += -cos(degToRad(180 - sideAngle));
 		Eye.z += sin(degToRad(180 - sideAngle));
+		if (Eye.z > 100)
+			Eye.z = 100;
+		if (Eye.z < -100)
+			Eye.z = -100;
+		if (Eye.x > 100)
+			Eye.x = 100;
+		if (Eye.x < -100)
+			Eye.x = -100;
 		break;
 	case 27:
 		exit(0);
@@ -581,7 +591,6 @@ void myReshape(int w, int h)
 void LoadAssets()
 {
 	// Loading Model files
-	//model_house.Load("Models/house/house.3ds");
 	asian_house.Load("Models/house6/house.3ds");
 	barrels.Load("Models/barrel/barrel.3ds");
 	tree_house.Load("Models/house/house.3ds");
@@ -601,9 +610,9 @@ void LoadAssets()
 
 void rotateCamera() {
 	if (mouseXOld > (9 * WIDTH / 10))
-		sideAngle += 0.5;
+		sideAngle += 3;
 	if (mouseXOld < (WIDTH / 10))
-		sideAngle -= 0.5;
+		sideAngle -= 3;
 	if (sideAngle > 360)
 		sideAngle -= 360;
 	if (sideAngle < -360)
@@ -611,8 +620,8 @@ void rotateCamera() {
 }
 
 void anim() {
-	//batteryLife -= 0.01;
-	skyAngle += 0.03;
+	batteryLife -= 0.1;
+	skyAngle += 0.1;
 	rotateCamera();
 	glutPostRedisplay();
 }
