@@ -79,39 +79,38 @@ Model_3DS house;
 Model_3DS key;
 Model_3DS battery;
 
-#pragma
+#pragma region
 
 double buildingsPos[24][2];
 double treesPos[2][2];
 double fencesPos[2][2];
 
-Vector D(-52, 0, 30);
-Vector D(-88, 0, 30);
-Vector D(-88, 0, 66);
-Vector D(-52, 0, 66);
-Vector E(-83, 0, 2);
-Vector E(-62, 0, 3);
-Vector E(-70, 0, -10);
-Vector E(-70, 0, -10);
-Vector I(-65, 0, -68);
-Vector I(-65, 0, -81);
-Vector I(-84, 0, -81);
-Vector I(-84, 0, -68);
-Vector H(-2, 0, -2);
-Vector H(14, 0, 2);
-Vector H(14, 0, -2);
-Vector H(-2, 0, -2);
-Vector C(62, 0, 56);
-Vector C(62, 0, 94);
-Vector C(88, 0, 94);
-Vector C(88, 0, 56);
-Vector B(95, 0, -27);
-Vector B(95, 0, -64);
-Vector B(60, 0, -64);
-Vector B(58, 0, -27);
+Vector D0(-52, 0, 30);
+Vector D1(-88, 0, 30);
+Vector D2(-88, 0, 66);
+Vector D3(-52, 0, 66);
+Vector E0(-83, 0, 2);
+Vector E1(-62, 0, 3);
+Vector E2(-70, 0, -10);
+Vector E3(-70, 0, -10);
+Vector I0(-65, 0, -68);
+Vector I1(-65, 0, -81);
+Vector I2(-84, 0, -81);
+Vector I3(-84, 0, -68);
+Vector H0(-2, 0, -2);
+Vector H1(14, 0, 2);
+Vector H2(14, 0, -2);
+Vector H3(-2, 0, -2);
+Vector C0(62, 0, 56);
+Vector C1(62, 0, 94);
+Vector C2(88, 0, 94);
+Vector C3(88, 0, 56);
+Vector B0(95, 0, -27);
+Vector B1(95, 0, -64);
+Vector B2(60, 0, -64);
+Vector B3(58, 0, -27);
 
-
-
+#pragma endregion
 
 // Textures
 GLTexture tex_ground;
