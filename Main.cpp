@@ -83,11 +83,11 @@ void print(int x, int y, char *string)
 		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, string[i]);
 }
 
-void sunLights() {
-	GLfloat light_diffuse[4] = { 0.1, 0.1, 0.0, 0.1 };
-	GLfloat light_ambient[4] = { 0.2, 0.2, 0.1, 0.1 };
-	GLfloat light_specular[4] = { 0.3, 0.3, 0.0, 0.3 };
-	GLfloat light_position[4] = { 0, 0, -10, 0.0 }; // <- w = 1
+void nightLights() {
+	GLfloat light_diffuse[4] = { 0.03, 0.03, 0.05, 0.3 };
+	GLfloat light_ambient[4] = { 0.03, 0.03, 0.05, 0.5 };
+	GLfloat light_specular[4] = { 0.3, 0.3, 0.3, 0.1 };
+	GLfloat light_position[4] = { 0, 0, -10, 0.0 };
 	GLfloat light_direction[3] = { 0, 0, 10 };
 	glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse);
@@ -101,10 +101,10 @@ void setUpLights()
 	GLfloat light_diffuse[4] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light_ambient[4] = { 0.2, 0.2, 0.2, 1.0 };
 	GLfloat light_specular[4] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_position[4] = { Eye.x + 5, Eye.y + 0.3, Eye.z + 15, 1.0 };
-	GLfloat spot_direction[3] = { -cos(degToRad(270 - sideAngle)), -sin(degToRad(upAngle)), sin(degToRad(270 - sideAngle)) };
+	GLfloat light_position[4] = { Eye.x, Eye.y, Eye.z, 1.0 };
+	GLfloat spot_direction[3] = { -cos(degToRad(270 - sideAngle)) * 20, -sin(degToRad(upAngle)) * 20, sin(degToRad(270 - sideAngle)) * 20 };
 	GLfloat spot_cutoff = batteryLife / 10;
-	GLfloat spot_exponent = 0.01;
+	GLfloat spot_exponent = 10;
 	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
@@ -185,8 +185,37 @@ void drawKeys() {
 			glScaled(0.5, 0.5, 0.5);
 			glutSolidTeapot(1);
 			glPopMatrix();
+		} else {
+			glDisable(GL_LIGHTING);
+			glPushMatrix();
+			glTranslated(Eye.x + .03, Eye.y + .02, Eye.z);
+			glRotated(-upAngle, 1, 0, 0);
+			glRotated(-sideAngle, 0, 1, 0);
+			glTranslated(0.01*i, 0, -0.1);
+			glScaled(0.003, 0.003, 0.003);
+			glutSolidTeapot(1);
+			glPopMatrix();
+			glEnable(GL_LIGHTING);
 		}
 	}
+}
+
+void drawBattery(){
+	glDisable(GL_LIGHTING);
+	glColor3d(0.2, 1, 0.2);
+	//for (int i = 0; i < batteryLife / 10; i++){
+	glPushMatrix();
+	glTranslated(Eye.x + .03, Eye.y + .05, Eye.z);
+	glRotated(-upAngle, 1, 0, 0);
+	glRotated(-sideAngle, 0, 1, 0);
+	glTranslated(0, 0, -0.2);
+	glRotated(-90, 0, 1, 0);
+	glScaled(0.005, 0.005, 0.001*batteryLife);
+	glutSolidCube(1);
+	glPopMatrix();
+	//}
+	glEnable(GL_LIGHTING);
+	glColor3d(1, 1, 1);
 }
 
 void myDisplay(void)
@@ -198,32 +227,17 @@ void myDisplay(void)
 	glRotated(sideAngle, 0, 1, 0);
 	gluLookAt(Eye.x, Eye.y, Eye.z, Eye.x, Eye.y, Eye.z - 10, Up.x, Up.y, Up.z);
 
-	setUpLights();
 
-	glPushMatrix();
+		setUpLights();
+
 	drawKeys();
-	glPopMatrix();
 
 	// Draw Ground
 	RenderGround();
 
 	//Drawing Battery Life Bar
-	glPushMatrix();
-	glDisable(GL_LIGHTING);
-	glColor3d(0.2, 1, 0.2);
-	for (int i = 0; i < batteryLife / 10; i++){
-		glPushMatrix();
-		glTranslated(Eye.x + .03, Eye.y + .03, Eye.z);
-		glRotated(-upAngle, 1, 0, 0);
-		glRotated(-sideAngle, 0, 1, 0);
-		glTranslated(0.005*i, 0, -0.1);
-		glScaled(0.005, 0.005, 0.005);
-		glutSolidCube(1);
-		glPopMatrix();
-	}
-	glEnable(GL_LIGHTING);
-	glColor3d(1, 1, 1);
-	glPopMatrix();
+	if (batteryLife > 0)
+		drawBattery();
 
 	// Draw Tree Model
 	glPushMatrix();
@@ -237,16 +251,6 @@ void myDisplay(void)
 	glRotatef(90.f, 1, 0, 0);
 	model_house.Draw();
 	glPopMatrix();
-
-
-
-	//glPushMatrix();
-	//glScaled(0.9, 0.9, 0.9);
-	//glTranslated(keyLocations[0].x-8.8, keyLocations[0].y, keyLocations[0].z-1.3);
-	////glRotatef(90.f, 1, 0, 0);
-	//glutSolidCube(4);
-	//glPopMatrix();
-
 
 	//sky box
 	glPushMatrix();
@@ -413,40 +417,15 @@ void main(int argc, char** argv)
 
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
-	glPushMatrix();
-
-	//glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHT1);
 	glEnable(GL_NORMALIZE);
-	//glEnable(GL_COLOR_MATERIAL);
 	glShadeModel(GL_SMOOTH);
 
 	setUpCamera();
 	LoadAssets();
-	sunLights();
-
-	glPopMatrix();
+	nightLights();
 
 	glutMainLoop();
 }
-
-//glDisable(GL_LIGHTING);
-//glPushMatrix();
-//glTranslated(Eye.x, Eye.y, Eye.z);
-//glRotated(-upAngle, 1, 0, 0);
-//glRotated(-sideAngle, 0, 1, 0);
-//glTranslated(0.005, 0, -0.1);
-//glScaled(0.005, 0.005, 0.005);
-//glPushMatrix();
-//glTranslated(0, 0, 1);
-//print(0, 0, "sadasdsads sdad wqewq e sadasd sa d ");
-//glPopMatrix();
-//glPushMatrix();
-//glTranslated(2.3, 0, 0);
-//glScaled(7, 0.7, 1);
-//glutSolidCube(1);
-//glPopMatrix();
-//glPopMatrix();
-//glEnable(GL_LIGHTING);
