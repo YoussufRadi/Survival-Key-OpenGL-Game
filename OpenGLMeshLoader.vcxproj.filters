@@ -33,4 +33,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="keys-collect.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="monster-attack.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="monster-footsteps.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="monster-rawr.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="player-footstep.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="success.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="charge.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+  </ItemGroup>
 </Project>

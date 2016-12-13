@@ -758,7 +758,7 @@ void Model_3DS::MapNameChunkProcessor(long length, long findex, int matindex)
 
 	std::string n = name;
 	n.erase(n.end() - 3, n.end());
-	n += "bmp";
+	n += "tga";
 	// Load the name and indicate that the material has a texture
 	char fullname[80];
 	sprintf(fullname, "%s%s", path, n.c_str());
