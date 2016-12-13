@@ -30,6 +30,9 @@ public:
 	}
 };
 
+bool playSound = true;
+float soundPlaying = 10;
+
 int keyCount = 0;
 const int keysAmount = 5;
 Vector key0(12.15, 1, 0.4);
@@ -540,7 +543,11 @@ void myKeyboard(unsigned char button, int x, int y)
 			Eye.x = 120;
 		if (Eye.x < -120)
 			Eye.x = -120;
-		PlaySoundA((LPCSTR) "player-footstep.wav", NULL, SND_FILENAME | SND_ASYNC);
+		if (playSound){
+			PlaySoundA((LPCSTR) "player-footstep.wav", NULL, SND_FILENAME | SND_ASYNC);
+			playSound = false;
+			soundPlaying = 0;
+		}	
 		break;
 	case  'a':
 		Eye.x += cos(degToRad(180 - sideAngle));
@@ -553,7 +560,11 @@ void myKeyboard(unsigned char button, int x, int y)
 			Eye.x = 120;
 		if (Eye.x < -120)
 			Eye.x = -120;
-		PlaySoundA((LPCSTR) "player-footstep.wav", NULL, SND_FILENAME | SND_ASYNC);
+		if (playSound){
+			PlaySoundA((LPCSTR) "player-footstep.wav", NULL, SND_FILENAME | SND_ASYNC);
+			playSound = false;
+			soundPlaying = 0;
+		}
 		break;
 	case  's':
 		Eye.z += cos(degToRad(sideAngle));
@@ -566,7 +577,11 @@ void myKeyboard(unsigned char button, int x, int y)
 			Eye.x = 120;
 		if (Eye.x < -120)
 			Eye.x = -120;
-		PlaySoundA((LPCSTR) "player-footstep.wav", NULL, SND_FILENAME | SND_ASYNC);
+		if (playSound){
+			PlaySoundA((LPCSTR) "player-footstep.wav", NULL, SND_FILENAME | SND_ASYNC);
+			playSound = false;
+			soundPlaying = 0;
+		}
 		break;
 	case  'd':
 		Eye.x += -cos(degToRad(180 - sideAngle));
@@ -579,14 +594,22 @@ void myKeyboard(unsigned char button, int x, int y)
 			Eye.x = 120;
 		if (Eye.x < -120)
 			Eye.x = -120;
-		PlaySoundA((LPCSTR) "player-footstep.wav", NULL, SND_FILENAME | SND_ASYNC);
+		if (playSound){
+			PlaySoundA((LPCSTR) "player-footstep.wav", NULL, SND_FILENAME | SND_ASYNC);
+			playSound = false;
+			soundPlaying = 0;
+		}
 		break;
 	case 27:
 		exit(0);
 		break; 
 	case 32:
 		if (!jumpFlag){
-			PlaySoundA((LPCSTR) "player-footstep.wav", NULL, SND_FILENAME | SND_ASYNC);
+			if (playSound){
+				PlaySoundA((LPCSTR) "player-footstep.wav", NULL, SND_FILENAME | SND_ASYNC);
+				playSound = false;
+				soundPlaying = 0;
+			}
 			jump();
 		}
 			break;
@@ -708,6 +731,11 @@ void rotateCamera() {
 }
 
 void anim() {
+	if (soundPlaying == 7)
+		playSound = true;
+	else
+		soundPlaying++;
+
 	if (jumpFactor <= 270){
 		Eye.y += sin(degToRad(jumpFactor));
 		jumpFactor += 10;
