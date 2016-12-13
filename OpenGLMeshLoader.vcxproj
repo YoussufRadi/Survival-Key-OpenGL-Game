@@ -92,6 +92,14 @@
     <ClInclude Include="GLTexture.h" />
     <ClInclude Include="Model_3DS.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="keys-collect.wav" />
+    <Media Include="monster-attack.wav" />
+    <Media Include="monster-footsteps.wav" />
+    <Media Include="monster-rawr.wav" />
+    <Media Include="player-footstep.wav" />
+    <Media Include="success.wav" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

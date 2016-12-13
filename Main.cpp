@@ -1,6 +1,7 @@
 #include "TextureBuilder.h"
 #include "Model_3DS.h"
 #include "GLTexture.h"
+#include <windows.h>
 #include <math.h>
 #include <stdio.h>
 #include <glut.h>
@@ -531,57 +532,63 @@ void myKeyboard(unsigned char button, int x, int y)
 	case 'w':
 		Eye.z += -cos(degToRad(sideAngle));
 		Eye.x += sin(degToRad(sideAngle));
-		if (Eye.z > 100)
-			Eye.z = 100;
-		if (Eye.z < -100)
-			Eye.z = -100;
-		if (Eye.x > 100)
-			Eye.x = 100;
-		if (Eye.x < -100)
-			Eye.x = -100;
+		if (Eye.z > 120)
+			Eye.z = 120;
+		if (Eye.z < -120)
+			Eye.z = -120;
+		if (Eye.x > 120)
+			Eye.x = 120;
+		if (Eye.x < -120)
+			Eye.x = -120;
+		PlaySoundA((LPCSTR) "player-footstep.wav", NULL, SND_FILENAME | SND_ASYNC);
 		break;
 	case  'a':
 		Eye.x += cos(degToRad(180 - sideAngle));
 		Eye.z += -sin(degToRad(180 - sideAngle));
-		if (Eye.z > 100)
-			Eye.z = 100;
-		if (Eye.z < -100)
-			Eye.z = -100;
-		if (Eye.x > 100)
-			Eye.x = 100;
-		if (Eye.x < -100)
-			Eye.x = -100;
+		if (Eye.z > 120)
+			Eye.z = 120;
+		if (Eye.z < -120)
+			Eye.z = -120;
+		if (Eye.x > 120)
+			Eye.x = 120;
+		if (Eye.x < -120)
+			Eye.x = -120;
+		PlaySoundA((LPCSTR) "player-footstep.wav", NULL, SND_FILENAME | SND_ASYNC);
 		break;
 	case  's':
 		Eye.z += cos(degToRad(sideAngle));
 		Eye.x += -sin(degToRad(sideAngle));
-		if (Eye.z > 100)
-			Eye.z = 100;
-		if (Eye.z < -100)
-			Eye.z = -100;
-		if (Eye.x > 100)
-			Eye.x = 100;
-		if (Eye.x < -100)
-			Eye.x = -100;
+		if (Eye.z > 120)
+			Eye.z = 120;
+		if (Eye.z < -120)
+			Eye.z = -120;
+		if (Eye.x > 120)
+			Eye.x = 120;
+		if (Eye.x < -120)
+			Eye.x = -120;
+		PlaySoundA((LPCSTR) "player-footstep.wav", NULL, SND_FILENAME | SND_ASYNC);
 		break;
 	case  'd':
 		Eye.x += -cos(degToRad(180 - sideAngle));
 		Eye.z += sin(degToRad(180 - sideAngle));
-		if (Eye.z > 100)
-			Eye.z = 100;
-		if (Eye.z < -100)
-			Eye.z = -100;
-		if (Eye.x > 100)
-			Eye.x = 100;
-		if (Eye.x < -100)
-			Eye.x = -100;
+		if (Eye.z > 120)
+			Eye.z = 120;
+		if (Eye.z < -120)
+			Eye.z = -120;
+		if (Eye.x > 120)
+			Eye.x = 120;
+		if (Eye.x < -120)
+			Eye.x = -120;
+		PlaySoundA((LPCSTR) "player-footstep.wav", NULL, SND_FILENAME | SND_ASYNC);
 		break;
 	case 27:
 		exit(0);
 		break; 
 	case 32:
-		if (!jumpFlag)
+		if (!jumpFlag){
+			PlaySoundA((LPCSTR) "player-footstep.wav", NULL, SND_FILENAME | SND_ASYNC);
 			jump();
+		}
 			break;
 	case 13:
 		startAgain();
@@ -624,8 +631,12 @@ void actM(int button, int state, int x, int y)
 				&& keysTaken[i] == false) {
 				keysTaken[i] = true;
 				keyCount++;
-				if (keyCount == keysAmount)
+				if (keyCount == keysAmount){
 					gameMode = 2;
+					PlaySoundA((LPCSTR) "success.wav", NULL, SND_FILENAME | SND_ASYNC);
+				}
+				else
+					PlaySoundA((LPCSTR) "keys-collect.wav", NULL, SND_FILENAME | SND_ASYNC);
 			}
 		}
 		for (int i = 0; i < batteriesAmount; i++)
@@ -706,8 +717,13 @@ void anim() {
 	}
 	if (batteryLife > 0)
 		batteryLife -= 0.1;
-	else if(gameMode ==1)
+	else if (gameMode == 1){
 		gameMode = 0;
+		PlaySoundA((LPCSTR) "monster-rawr.wav", NULL, SND_FILENAME | SND_SYNC);
+		PlaySoundA((LPCSTR) "monster-footsteps.wav", NULL, SND_FILENAME | SND_SYNC);
+		PlaySoundA((LPCSTR) "monster-attack.wav", NULL, SND_FILENAME | SND_SYNC);
+
+	}
 	skyAngle += 0.1;
 	rotateCamera();
 	glutPostRedisplay();
