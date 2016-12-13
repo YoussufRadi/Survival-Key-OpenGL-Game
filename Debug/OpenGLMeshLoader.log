@@ -1,14 +1,11 @@
 ﻿  Main.cpp
 g:\survival-key-opengl-game\texturebuilder.h(27): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
 g:\survival-key-opengl-game\texturebuilder.h(28): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
-g:\survival-key-opengl-game\main.cpp(156): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
-g:\survival-key-opengl-game\main.cpp(157): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
-g:\survival-key-opengl-game\main.cpp(158): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
-g:\survival-key-opengl-game\main.cpp(179): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
-g:\survival-key-opengl-game\main.cpp(181): warning C4838: conversion from 'GLdouble' to 'GLfloat' requires a narrowing conversion
-g:\survival-key-opengl-game\main.cpp(182): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
-g:\survival-key-opengl-game\main.cpp(466): warning C4473: 'printf' : not enough arguments passed for format string
-  g:\survival-key-opengl-game\main.cpp(466): note: placeholders and their parameters expect 4 variadic arguments, but 0 were provided
-  g:\survival-key-opengl-game\main.cpp(466): note: the missing variadic argument 1 is required by format string '%f'
+g:\survival-key-opengl-game\main.cpp(141): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
+g:\survival-key-opengl-game\main.cpp(142): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
+g:\survival-key-opengl-game\main.cpp(143): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
+g:\survival-key-opengl-game\main.cpp(164): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
+g:\survival-key-opengl-game\main.cpp(166): warning C4838: conversion from 'GLdouble' to 'GLfloat' requires a narrowing conversion
+g:\survival-key-opengl-game\main.cpp(167): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
 GLTexture.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:LBR' specification
   OpenGLMeshLoader.vcxproj -> G:\Survival-Key-OpenGL-Game\Debug\OpenGLMeshLoader.exe

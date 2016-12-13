@@ -51,6 +51,14 @@ Vector key4(0.984, 0, -74.58);
 Vector keyLocations[] = { key0, key1, key2, key3, key4};
 bool keysTaken[] = { false, false, false, false, false};
 
+const int batteriesAmount = 4;
+Vector battery0(-70.5987, 0, -2.65);
+Vector battery1(-69, 0, -71);
+Vector battery2(87.19, 0, -54.37);
+Vector battery3(-84.804683, 0, 31.835105);
+Vector batteryLocations[] = { battery0, battery1, battery2, battery3 };
+bool batteriesTaken[] = { false, false, false, false, false };
+
 
 // 3D Projection Options
 GLdouble fovy = 45.0;
@@ -119,29 +127,6 @@ Vector buildingsPos[24] = { D0, D1 ,D2, D3, E0, E1 ,E2, E3 , I0, I1 ,I2, I3 , H0
 GLTexture tex_ground;
 GLTexture tex_key;
 
-void glEnable2D()
-{
-	int vPort[4];
-
-	glGetIntegerv(GL_VIEWPORT, vPort);
-
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-
-	glOrtho(0, vPort[2], 0, vPort[3], -1, 1);
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-}
-
-void glDisable2D()
-{
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-}
 
 void print(int x, int y, char *string)
 {
@@ -246,6 +231,19 @@ void RenderGround()
 	glColor3f(1, 1, 1);	// Set material back to white instead of grey used for the ground texture.
 }
 
+void drawBatteries() {
+	for (int i = 0; i < batteriesAmount; i++)
+	{
+		if (batteriesTaken[i] == false) {
+			glPushMatrix();
+			glTranslated(batteryLocations[i].x, batteryLocations[i].y, batteryLocations[i].z);
+			glScaled(0.05, 0.05, 0.05);
+			battery.Draw();
+			glPopMatrix();
+		}
+	}
+}
+
 void drawKeys() {
 
 	glEnable(GL_TEXTURE_GEN_S); //enable texture coordinate generation
@@ -283,22 +281,20 @@ void drawKeys() {
 }
 
 void drawBatteryBar() {
-	glEnable2D();
 	glDisable(GL_LIGHTING);
 	glColor3d(0.2, 1, 0.2);
 	//for (int i = 0; i < batteryLife / 10; i++){
 	glPushMatrix();
-	//glTranslated(Eye.x + .03, Eye.y + .05, Eye.z);
-	//glRotated(-upAngle, 1, 0, 0);
-	//glRotated(-sideAngle, 0, 1, 0);
-	//glTranslated(0, 0, -0.2);
-	//glRotated(-90, 0, 1, 0);
-	//glScaled(0.005, 0.005, 0.001*batteryLife);
-	glutSolidCube(100);
+	glTranslated(Eye.x + .03, Eye.y + .05, Eye.z);
+	glRotated(-upAngle, 1, 0, 0);
+	glRotated(-sideAngle, 0, 1, 0);
+	glTranslated(0, 0, -0.2);
+	glRotated(-90, 0, 1, 0);
+	glScaled(0.005, 0.005, 0.001*batteryLife);
+	glutSolidCube(1);
 	glPopMatrix();
 	//}
 	glEnable(GL_LIGHTING);
-	glDisable2D();
 	glColor3d(1, 1, 1);
 }
 
@@ -313,7 +309,7 @@ void myDisplay(void)
 
 
 	setUpLights();
-
+	drawBatteries();
 	drawKeys();
 
 	// Draw Ground
@@ -388,7 +384,6 @@ void myDisplay(void)
 	glPopMatrix();
 
 	//Draw House Model
-	//glColor3f(0.647, 0.168, 0.168);
 	glPushMatrix();
 	glTranslated(75, 0, 75);
 	glScaled(0.05, 0.05, 0.05);
@@ -426,11 +421,11 @@ void myDisplay(void)
 	//drawTree(112.5, -37.5);
 	//drawTree(112.5, -112.5);
 
-	//// Draw Battery Model
-	//glPushMatrix();
-	//glTranslated(0, 0, 0);
-	//battery.Draw();
-	//glPopMatrix();
+	// Draw Battery Model
+	glPushMatrix();
+	glTranslated(0, 0, 0);
+	battery.Draw();
+	glPopMatrix();
 
 	//sky box
 	glPushMatrix();
@@ -463,7 +458,7 @@ bool checkForCollision(double x, double z) {
 
 		double minz = min(z1, z2);
 		double maxz = max(z1, z2);
-		printf("minx %f\tmaxx %f\tminz %f\tmaxz %f\n");
+		//printf("minx %f\tmaxx %f\tminz %f\tmaxz %f\n");
 
 		if (x >= minx && x <= maxx && z >= minz && z <= maxz)return true;
 	}
@@ -506,10 +501,10 @@ void myKeyboard(unsigned char button, int x, int y)
 	default:
 		break;
 	}
-	if (checkForCollision(Eye.x, Eye.z)) {
-		Eye.x = prevX;
-		Eye.z = prevZ;
-	}
+	//if (checkForCollision(Eye.x, Eye.z)) {
+	//	Eye.x = prevX;
+	//	Eye.z = prevZ;
+	//}
 
 	printf("x  = %f\t z = %f\n", Eye.x, Eye.z);
 	//printf("Eye.x: %f	 Eye.z: %f\n", Eye.x, Eye.z);
@@ -545,6 +540,16 @@ void actM(int button, int state, int x, int y)
 				keyCount++;
 				printf("Key Count: %i", keyCount);
 				printf("\n");
+			}
+		}
+		for (int i = 0; i < batteriesAmount; i++)
+		{
+			if (Eye.x <= batteryLocations[i].x + 5 && Eye.x >= batteryLocations[i].x - 5
+				&& Eye.z <= batteryLocations[i].z + 5 && Eye.z >= batteryLocations[i].z - 5
+				&& batteriesTaken[i] == false) {
+				batteriesTaken[i] = true;
+				batteryLife += 20;
+				batteryLife =(int) batteryLife%100;
 			}
 		}
 	}
