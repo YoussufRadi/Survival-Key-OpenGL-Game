@@ -7,7 +7,7 @@
 
 #define PI 3.14159265
 #define degToRad(x) ((x)*PI/180)
-//#pragma  comment(lib, "legacy_stdio_definitions.lib")
+#pragma  comment(lib, "legacy_stdio_definitions.lib")
 
 int WIDTH = glutGet(GLUT_SCREEN_WIDTH);
 int HEIGHT = glutGet(GLUT_SCREEN_HEIGHT);
@@ -372,7 +372,7 @@ void LoadAssets()
 	// Loading texture files
 	tex_ground.Load("Textures/grassground.bmp");
 	tex_key.Load("Textures/gold.bmp");
-	loadBMP(&tex, "Textures/sky4-jpg.bmp", true);
+	loadBMP(&tex, "Textures/night-sky.bmp", true);
 
 }
 
