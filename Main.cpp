@@ -710,7 +710,6 @@ void rotateCamera() {
 void anim() {
 	if (jumpFactor <= 270){
 		Eye.y += sin(degToRad(jumpFactor));
-		printf("jumpFactor is %f, sin value is %f \n", jumpFactor, sin(degToRad(jumpFactor)));
 		jumpFactor += 10;
 		if (jumpFactor == 270)
 			jumpFlag = false;
