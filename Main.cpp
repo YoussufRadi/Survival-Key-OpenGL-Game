@@ -42,12 +42,14 @@ public:
 };
 
 int keyCount = 0;
-const int keysAmount = 3;
-Vector key0(20, 1, 3);
-Vector key1(-8, 1, -5);
-Vector key2(10, 1, -23);
-Vector keyLocations[] = { key0, key1, key2 };
-bool keysTaken[] = { false, false, false };
+const int keysAmount = 5;
+Vector key0(12.15, 1, 0.4);
+Vector key1(-79.6, 0, 0.36);
+Vector key2(-70.76, 0, 30);
+Vector key3(89, 2, 76);
+Vector key4(0.984, 0, -74.58);
+Vector keyLocations[] = { key0, key1, key2, key3, key4};
+bool keysTaken[] = { false, false, false, false, false};
 
 
 // 3D Projection Options
@@ -75,13 +77,13 @@ Model_3DS tree_house;
 Model_3DS bathroom;
 Model_3DS swamp_house;
 Model_3DS maple_tree;
+Model_3DS tree;
 Model_3DS house;
 Model_3DS key;
 Model_3DS battery;
 
 #pragma region
 
-double buildingsPos[24][2];
 double treesPos[2][2];
 double fencesPos[2][2];
 
@@ -97,7 +99,7 @@ Vector I0(-65, 0, -68);
 Vector I1(-65, 0, -81);
 Vector I2(-84, 0, -81);
 Vector I3(-84, 0, -68);
-Vector H0(-2, 0, -2);
+Vector H0(-2, 0, 2);
 Vector H1(14, 0, 2);
 Vector H2(14, 0, -2);
 Vector H3(-2, 0, -2);
@@ -110,11 +112,36 @@ Vector B1(95, 0, -64);
 Vector B2(60, 0, -64);
 Vector B3(58, 0, -27);
 
+Vector buildingsPos[24] = { D0, D1 ,D2, D3, E0, E1 ,E2, E3 , I0, I1 ,I2, I3 , H0, H1 ,H2, H3, C0, C1 ,C2, C3 , B0, B1 ,B2, B3 };
 #pragma endregion
 
 // Textures
 GLTexture tex_ground;
 GLTexture tex_key;
+
+void glEnable2D()
+{
+	int vPort[4];
+
+	glGetIntegerv(GL_VIEWPORT, vPort);
+
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+
+	glOrtho(0, vPort[2], 0, vPort[3], -1, 1);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+}
+
+void glDisable2D()
+{
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+}
 
 void print(int x, int y, char *string)
 {
@@ -136,6 +163,14 @@ void nightLights() {
 	glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular);
 	glLightfv(GL_LIGHT1, GL_POSITION, light_position);
 	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, light_direction);
+}
+
+void drawTree(double x, double z) {
+	glPushMatrix();
+	glTranslatef(x, 8.5, z);
+	glScalef(6, 6, 6);
+	maple_tree.Draw();
+	glPopMatrix();
 }
 
 void setUpLights()
@@ -248,20 +283,22 @@ void drawKeys() {
 }
 
 void drawBatteryBar() {
+	glEnable2D();
 	glDisable(GL_LIGHTING);
 	glColor3d(0.2, 1, 0.2);
 	//for (int i = 0; i < batteryLife / 10; i++){
 	glPushMatrix();
-	glTranslated(Eye.x + .03, Eye.y + .05, Eye.z);
-	glRotated(-upAngle, 1, 0, 0);
-	glRotated(-sideAngle, 0, 1, 0);
-	glTranslated(0, 0, -0.2);
-	glRotated(-90, 0, 1, 0);
-	glScaled(0.005, 0.005, 0.001*batteryLife);
-	glutSolidCube(1);
+	//glTranslated(Eye.x + .03, Eye.y + .05, Eye.z);
+	//glRotated(-upAngle, 1, 0, 0);
+	//glRotated(-sideAngle, 0, 1, 0);
+	//glTranslated(0, 0, -0.2);
+	//glRotated(-90, 0, 1, 0);
+	//glScaled(0.005, 0.005, 0.001*batteryLife);
+	glutSolidCube(100);
 	glPopMatrix();
 	//}
 	glEnable(GL_LIGHTING);
+	glDisable2D();
 	glColor3d(1, 1, 1);
 }
 
@@ -372,6 +409,23 @@ void myDisplay(void)
 	swamp_house.Draw();
 	glPopMatrix();
 
+	//drawTree(-112.5, 112.5);
+	//drawTree(-112.5, 37.5);
+	//drawTree(-112.5, -37.5);
+	//drawTree(-112.5, -112.5);
+	//drawTree(-37.5, 112.5);
+	//drawTree(-37.5, 37.5);
+	//drawTree(-37.5, -37.5);
+	//drawTree(-37.5, -112.5);
+	//drawTree(37.5, 112.5);
+	//drawTree(37.5, 37.5);
+	//drawTree(37.5, -37.5);
+	//drawTree(37.5, -112.5);
+	//drawTree(112.5, 112.5);
+	//drawTree(112.5, 37.5);
+	//drawTree(112.5, -37.5);
+	//drawTree(112.5, -112.5);
+
 	//// Draw Battery Model
 	//glPushMatrix();
 	//glTranslated(0, 0, 0);
@@ -382,13 +436,13 @@ void myDisplay(void)
 	glPushMatrix();
 	GLUquadricObj * qobj;
 	qobj = gluNewQuadric();
-	glRotated(skyAngle, 0, 1, 0);
 	glTranslated(50, 0, 0);
+	glRotated(skyAngle, 0, 1, 0);
 	glRotated(90, 1, 0, 1);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	gluQuadricTexture(qobj, true);
 	gluQuadricNormals(qobj, GL_SMOOTH);
-	gluSphere(qobj, 150, 100, 100);
+	gluSphere(qobj, 200, 100, 100);
 	gluDeleteQuadric(qobj);
 	glPopMatrix();
 	//glDisable(GL_TEXTURE_2D);
@@ -396,8 +450,32 @@ void myDisplay(void)
 	glutSwapBuffers();
 }
 
+bool checkForCollision(double x, double z) {
+	for (int i = 0; i < 23; i+=4)
+	{
+		double x1 = buildingsPos[i].x;
+		double z1 = buildingsPos[i].z;
+		double x2 = buildingsPos[i + 2].x;
+		double z2 = buildingsPos[i + 2].z;
+
+		double minx = min(x1, x2);
+		double maxx = max(x1, x2);
+
+		double minz = min(z1, z2);
+		double maxz = max(z1, z2);
+		printf("minx %f\tmaxx %f\tminz %f\tmaxz %f\n");
+
+		if (x >= minx && x <= maxx && z >= minz && z <= maxz)return true;
+	}
+	return false;
+}
+
 void myKeyboard(unsigned char button, int x, int y)
 {
+
+	double prevX = Eye.x;
+	double prevZ = Eye.z;
+
 	switch (button)
 	{
 	case 'x':
@@ -428,6 +506,11 @@ void myKeyboard(unsigned char button, int x, int y)
 	default:
 		break;
 	}
+	if (checkForCollision(Eye.x, Eye.z)) {
+		Eye.x = prevX;
+		Eye.z = prevZ;
+	}
+
 	printf("x  = %f\t z = %f\n", Eye.x, Eye.z);
 	//printf("Eye.x: %f	 Eye.z: %f\n", Eye.x, Eye.z);
 	//printf("Range in %i to %i\n", tx - 1, tx + 1);
@@ -503,6 +586,7 @@ void LoadAssets()
 	swamp_house.Load("Models/house1/house.3ds");
 	key.Load("Models/key/key.3ds");
 	battery.Load("Models/battery/battery.3ds");
+	tree.Load("Models/tree2/tree.3ds");
 	// Loading texture files
 	tex_ground.Load("Textures/grassground.bmp");
 	tex_key.Load("Textures/gold.bmp");
