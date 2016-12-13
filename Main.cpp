@@ -68,7 +68,7 @@ GLdouble zFar = 1000;
 Vector Eye(20, 2, 20);
 Vector At(Eye.x, Eye.y, Eye.z - 10);
 Vector Up(0, 1, 0);
-GLdouble upAngle = -90;
+GLdouble upAngle = 0;
 GLdouble sideAngle = 180;
 double skyAngle = 90;
 int mouseXOld = 0;
@@ -264,10 +264,10 @@ void drawKeys() {
 		else {
 			glDisable(GL_LIGHTING);
 			glPushMatrix();
-			glTranslated(Eye.x + .03, Eye.y + .02, Eye.z);
-			glRotated(-upAngle, 1, 0, 0);
+			glTranslated(Eye.x, Eye.y, Eye.z);
 			glRotated(-sideAngle, 0, 1, 0);
-			glTranslated(0.01*i, 0, -0.1);
+			glRotated(-upAngle + 15, 1, 0, 0);
+			glTranslated(0.01*(i-3), 0, -0.1);
 			glRotated(90, 0, 1, 0);
 			glRotated(90, 0, 0, 1);
 			glScaled(0.0009, 0.0009, 0.0009);
@@ -282,17 +282,15 @@ void drawKeys() {
 void drawBatteryBar() {
 	glDisable(GL_LIGHTING);
 	glColor3d(0.2, 1, 0.2);
-	//for (int i = 0; i < batteryLife / 10; i++){
 	glPushMatrix();
-	glTranslated(Eye.x + .03, Eye.y + .05, Eye.z);
-	glRotated(-upAngle, 1, 0, 0);
+	glTranslated(Eye.x , Eye.y, Eye.z);
 	glRotated(-sideAngle, 0, 1, 0);
+	glRotated(-upAngle+20, 1, 0, 0);
 	glTranslated(0, 0, -0.2);
 	glRotated(-90, 0, 1, 0);
 	glScaled(0.005, 0.005, 0.001*batteryLife);
 	glutSolidCube(1);
 	glPopMatrix();
-	//}
 	glEnable(GL_LIGHTING);
 	glColor3d(1, 1, 1);
 }
@@ -436,7 +434,6 @@ bool checkForCollision(double x, double z) {
 
 		double minz = min(z1, z2);
 		double maxz = max(z1, z2);
-		//printf("minx %f\tmaxx %f\tminz %f\tmaxz %f\n");
 
 		if (x >= minx && x <= maxx && z >= minz && z <= maxz)return true;
 	}
@@ -511,14 +508,12 @@ void myKeyboard(unsigned char button, int x, int y)
 	default:
 		break;
 	}
-	//if (checkForCollision(Eye.x, Eye.z)) {
-	//	Eye.x = prevX;
-	//	Eye.z = prevZ;
-	//}
 
-	printf("x  = %f\t z = %f\n", Eye.x, Eye.z);
-	//printf("Eye.x: %f	 Eye.z: %f\n", Eye.x, Eye.z);
-	//printf("Range in %i to %i\n", tx - 1, tx + 1);
+	if (checkForCollision(Eye.x, Eye.z)) {
+		Eye.x = prevX;
+		Eye.z = prevZ;
+	}
+
 
 	glutPostRedisplay();
 }
@@ -558,8 +553,9 @@ void actM(int button, int state, int x, int y)
 				&& Eye.z <= batteryLocations[i].z + 5 && Eye.z >= batteryLocations[i].z - 5
 				&& batteriesTaken[i] == false) {
 				batteriesTaken[i] = true;
-				batteryLife += 20;
-				batteryLife =(int) batteryLife%100;
+				batteryLife += 50;
+				if (batteryLife > 100)
+					batteryLife = 100;
 			}
 		}
 	}
