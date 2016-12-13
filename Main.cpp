@@ -67,8 +67,15 @@ int cameraZoom = 0;
 double batteryLife = 100;
 
 // Model Variables
-Model_3DS model_house;
-Model_3DS model_tree;
+Model_3DS asian_house;
+Model_3DS barrels;
+Model_3DS tree_house;
+Model_3DS bathroom;
+Model_3DS swamp_house;
+Model_3DS maple_tree;
+Model_3DS house;
+Model_3DS key;
+Model_3DS battery;
 
 // Textures
 GLTexture tex_ground;
@@ -155,13 +162,13 @@ void RenderGround()
 	glBegin(GL_QUADS);
 	glNormal3f(0, 1, 0);	// Set quad normal direction.
 	glTexCoord2f(0, 0);		// Set tex coordinates ( Using (0,0) -> (5,5) with texture wrapping set to GL_REPEAT to simulate the ground repeated grass texture).
-	glVertex3f(-20, 0, -20);
+	glVertex3f(-200, 0, -200);
 	glTexCoord2f(10, 0);
-	glVertex3f(20, 0, -20);
+	glVertex3f(200, 0, -200);
 	glTexCoord2f(10, 10);
-	glVertex3f(20, 0, 20);
+	glVertex3f(200, 0, 200);
 	glTexCoord2f(0, 10);
-	glVertex3f(-20, 0, 20);
+	glVertex3f(-200, 0, 200);
 	glEnd();
 	glPopMatrix();
 
@@ -182,8 +189,9 @@ void drawKeys() {
 		if (keysTaken[i] == false) {
 			glPushMatrix();
 			glTranslated(keyLocations[i].x, keyLocations[i].y, keyLocations[i].z);
-			glScaled(0.5, 0.5, 0.5);
-			glutSolidTeapot(1);
+			glScaled(0.05, 0.05, 0.05);
+			//glutSolidTeapot(1);
+			key.Draw();
 			glPopMatrix();
 		}
 		else {
@@ -193,15 +201,18 @@ void drawKeys() {
 			glRotated(-upAngle, 1, 0, 0);
 			glRotated(-sideAngle, 0, 1, 0);
 			glTranslated(0.01*i, 0, -0.1);
-			glScaled(0.003, 0.003, 0.003);
-			glutSolidTeapot(1);
+			glRotated(90, 0, 1, 0);
+			glRotated(90, 0, 0, 1);
+			glScaled(0.0009, 0.0009, 0.0009);
+			//glutSolidTeapot(1);
+			key.Draw();
 			glPopMatrix();
 			glEnable(GL_LIGHTING);
 		}
 	}
 }
 
-void drawBattery() {
+void drawBatteryBar() {
 	glDisable(GL_LIGHTING);
 	glColor3d(0.2, 1, 0.2);
 	//for (int i = 0; i < batteryLife / 10; i++){
@@ -238,20 +249,92 @@ void myDisplay(void)
 
 	//Drawing Battery Life Bar
 	if (batteryLife > 0)
-		drawBattery();
+		drawBatteryBar();
+
+	//Draw Swamp House Model
+	glPushMatrix();
+	glTranslated(-75, 0, 75);
+	glScaled(0.75, 0.75, 0.75);
+	asian_house.Draw();
+	glPopMatrix();
+
+	//Draw Barrels Model
+	glPushMatrix();
+	glTranslated(-75, 0, 0);
+	glScaled(0.4, 0.4, 0.4);
+	barrels.Draw();
+	glPopMatrix();
+
+	//Draw tree house Model
+	glPushMatrix();
+	glTranslated(-75, 0, -75);
+	glRotated(90, 1, 0, 0);
+	glScaled(3, 3, 3);
+	tree_house.Draw();
+	glPopMatrix();
 
 	// Draw Tree Model
 	glPushMatrix();
-	glTranslatef(10, 0, 0);
-	glScalef(0.7, 0.7, 0.7);
-	model_tree.Draw();
+	glTranslatef(0, 8.5, 75);
+	glScalef(6, 6, 6);
+	maple_tree.Draw();
 	glPopMatrix();
 
-	// Draw house Model
+	//Draw Bathroom Model
 	glPushMatrix();
-	glRotatef(90.f, 1, 0, 0);
-	model_house.Draw();
+	glTranslated(0, 0, 0);
+	glScaled(0.02, 0.02, 0.02);
+	bathroom.Draw();
 	glPopMatrix();
+
+	//Draw Bathroom Model
+	glPushMatrix();
+	glTranslated(4, 0, 0);
+	glScaled(0.02, 0.02, 0.02);
+	bathroom.Draw();
+	glPopMatrix();
+
+	//Draw Bathroom Model
+	glPushMatrix();
+	glTranslated(8, 0, 0);
+	glScaled(0.02, 0.02, 0.02);
+	bathroom.Draw();
+	glPopMatrix();
+
+	// Draw Tree Model
+	glPushMatrix();
+	glTranslatef(0, 8.5, -75);
+	glScalef(6, 6, 6);
+	maple_tree.Draw();
+	glPopMatrix();
+
+	//Draw House Model
+	//glColor3f(0.647, 0.168, 0.168);
+	glPushMatrix();
+	glTranslated(75, 0, 75);
+	glScaled(0.05, 0.05, 0.05);
+	house.Draw();
+	glPopMatrix();
+
+
+	// Draw Tree Model
+	glPushMatrix();
+	glTranslatef(75, 8.5, 0);
+	glScalef(6, 6, 6);
+	maple_tree.Draw();
+	glPopMatrix();
+
+	// Draw Swamp House Model
+	glPushMatrix();
+	glTranslated(75, 0, -75);
+	swamp_house.Draw();
+	glPopMatrix();
+
+	//// Draw Battery Model
+	//glPushMatrix();
+	//glTranslated(0, 0, 0);
+	//battery.Draw();
+	//glPopMatrix();
 
 	//sky box
 	glPushMatrix();
@@ -262,7 +345,7 @@ void myDisplay(void)
 	glBindTexture(GL_TEXTURE_2D, tex);
 	gluQuadricTexture(qobj, true);
 	gluQuadricNormals(qobj, GL_SMOOTH);
-	gluSphere(qobj, 100, 100, 100);
+	gluSphere(qobj, 300, 100, 100);
 	gluDeleteQuadric(qobj);
 	glPopMatrix();
 	//glDisable(GL_TEXTURE_2D);
@@ -367,9 +450,16 @@ void myReshape(int w, int h)
 void LoadAssets()
 {
 	// Loading Model files
-	model_house.Load("Models/house/house.3ds");
-	model_tree.Load("Models/tree/tree1.3ds");
-
+	//model_house.Load("Models/house/house.3ds");
+	asian_house.Load("Models/house6/house.3ds");
+	barrels.Load("Models/barrel/barrel.3ds");
+	tree_house.Load("Models/house/house.3ds");
+	maple_tree.Load("Models/tree1/tree.3ds");
+	bathroom.Load("Models/bathroom/bathroom.3ds");
+	house.Load("Models/house4/house.3ds");
+	swamp_house.Load("Models/house1/house.3ds");
+	key.Load("Models/key/key.3ds");
+	battery.Load("Models/battery/battery.3ds");
 	// Loading texture files
 	tex_ground.Load("Textures/grassground.bmp");
 	tex_key.Load("Textures/gold.bmp");
@@ -389,7 +479,7 @@ void rotateCamera() {
 }
 
 void anim() {
-	batteryLife -= 0.01;
+	//batteryLife -= 0.01;
 	rotateCamera();
 	glutPostRedisplay();
 }
