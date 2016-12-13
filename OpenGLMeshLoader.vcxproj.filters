@@ -52,5 +52,8 @@
     <Media Include="success.wav">
       <Filter>Resource Files</Filter>
     </Media>
+    <Media Include="charge.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
   </ItemGroup>
 </Project>

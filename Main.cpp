@@ -83,6 +83,7 @@ Model_3DS tree;
 Model_3DS house;
 Model_3DS key;
 Model_3DS battery;
+Model_3DS flash;
 
 #pragma region
 
@@ -387,6 +388,19 @@ void myDisplay(void)
 			barrels.Draw();
 			glPopMatrix();
 
+			//Draw Flash Model
+			glPushMatrix();
+			glTranslated(Eye.x, Eye.y, Eye.z);
+			glRotated(-sideAngle, 0, 1, 0);
+			glRotated(-upAngle-20, 1, 0, 0);
+			glTranslated(0.4, 0, -0.8);
+			glScaled(0.1, 0.1, 0.1);
+			glRotated(200, 0, 1, 0);
+			glRotated(-40, 1, 0, 0);
+			glRotated(90, 0, 0, 1);
+			flash.Draw();
+			glPopMatrix();
+
 			//Draw tree house Model
 			glPushMatrix();
 			glTranslated(-75, 0, -75);
@@ -671,6 +685,7 @@ void actM(int button, int state, int x, int y)
 				batteryLife += 50;
 				if (batteryLife > 100)
 					batteryLife = 100;
+				PlaySoundA((LPCSTR) "charge.wav", NULL, SND_FILENAME | SND_ASYNC);
 			}
 		}
 	}
@@ -704,6 +719,7 @@ void LoadAssets()
 	// Loading Model files
 	asian_house.Load("Models/house6/house.3ds");
 	barrels.Load("Models/barrel/barrel.3ds");
+	flash.Load("Models/flashlight/flashlight.3ds");
 	tree_house.Load("Models/house/house.3ds");
 	maple_tree.Load("Models/tree1/tree.3ds");
 	bathroom.Load("Models/bathroom/bathroom.3ds");

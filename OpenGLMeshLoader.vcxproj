@@ -93,6 +93,7 @@
     <ClInclude Include="Model_3DS.h" />
   </ItemGroup>
   <ItemGroup>
+    <Media Include="charge.wav" />
     <Media Include="keys-collect.wav" />
     <Media Include="monster-attack.wav" />
     <Media Include="monster-footsteps.wav" />
