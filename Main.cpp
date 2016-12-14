@@ -235,7 +235,7 @@ void RenderGround()
 	glBindTexture(GL_TEXTURE_2D, tex_ground.texture[0]);	// Bind the ground texture
 	glPushMatrix();
 	glBegin(GL_QUADS);
-	glNormal3f(0, 1, 0);	// Set quad normal direction.
+	//glNormal3f(0, 1, 0);	// Set quad normal direction.
 	glTexCoord2f(0, 0);		// Set tex coordinates ( Using (0,0) -> (5,5) with texture wrapping set to GL_REPEAT to simulate the ground repeated grass texture).
 	glVertex3f(-200, 0, -200);
 	glTexCoord2f(10, 0);
@@ -329,11 +329,11 @@ void myDisplay(void)
 			glTranslated(Eye.x -.4, Eye.y, Eye.z-2);
 			glColor3d(1, 0, 0);
 			print(0, 0, "Game Over You Lost :( Press Enter To Start Again");
-			glPushMatrix();
-			glScaled(1, 0.1, 1);
-			glTranslated(.38, 0, -.5);
-			glutSolidCube(1);
-			glPopMatrix();
+			//glPushMatrix();
+			//glScaled(1, 0.1, 1);
+			//glTranslated(.38, 0, -.5);
+			//glutSolidCube(1);
+			//glPopMatrix();
 			glPopMatrix();
 			glEnable(GL_LIGHTING);
 			break;
@@ -495,11 +495,11 @@ void myDisplay(void)
 			glTranslated(Eye.x - .4, Eye.y, Eye.z - 2);
 			glColor3d(1, 0, 0);
 			print(0, 0, "Congrats You Won :D Press Enter To Start Again");
-			glPushMatrix();
-			glScaled(1, 0.1, 1);
-			glTranslated(.38, 0, -.5);
-			glutSolidCube(1);
-			glPopMatrix();
+			//glPushMatrix();
+			//glScaled(1, 0.1, 1);
+			//glTranslated(.38, 0, -.5);
+			//glutSolidCube(1);
+			//glPopMatrix();
 			glPopMatrix();
 			glEnable(GL_LIGHTING);
 			break;
@@ -759,7 +759,7 @@ void anim() {
 			jumpFlag = false;
 	}
 	if (batteryLife > 0)
-		batteryLife -= 0.1;
+		batteryLife -= 0.05;
 	else if (gameMode == 1){
 		gameMode = 0;
 		PlaySoundA((LPCSTR) "monster-rawr.wav", NULL, SND_FILENAME | SND_SYNC);
